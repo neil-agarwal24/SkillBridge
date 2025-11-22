@@ -141,21 +141,3 @@ cd backend
 # Add MongoDB Atlas connection string to env
 git push railway main
 ```
-
-## 🤝 Contributing
-
-This was built for a hackathon. Feel free to fork and improve!
-
-## 📄 License
-
-MIT License - See LICENSE file for details
-
-## 👥 Team
-
-Built with ❤️ by [Your Team Name]
-
-## 🙏 Acknowledgments
-
-- Google Generative AI for smart matching
-- Next.js team for an amazing framework
-- All open-source contributors
