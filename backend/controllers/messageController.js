@@ -252,26 +252,75 @@ exports.markAsRead = async (req, res, next) => {
 // @access  Public
 exports.aiSuggestMessage = async (req, res, next) => {
   try {
-    const { targetUserName, targetUserSkills, targetUserItems, context } = req.body;
+    const { senderId, receiverId, context } = req.body;
 
-    // Simple AI-like suggestions (in production, use OpenAI API)
-    const suggestions = [
-      `Hi ${targetUserName}! I noticed you offer ${targetUserSkills?.[0] || 'some great skills'}. I'd love to connect!`,
-      `Hello! Your skills in ${targetUserSkills?.[0] || 'your area'} are impressive. Would you be interested in collaborating?`,
-      `Hey ${targetUserName}! I see you have ${targetUserItems?.[0] || 'items'} available. Could we arrange a time to discuss?`,
-      `Hi! I'm looking for help with ${context || 'a project'} and thought you might be perfect. Let's chat!`
-    ];
+    // Validate required fields
+    if (!senderId || !receiverId) {
+      return res.status(400).json({
+        success: false,
+        message: 'senderId and receiverId are required'
+      });
+    }
 
-    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+    // Get user controller to fetch profiles
+    const { getAllMockUsers } = require('./userController');
+    const User = require('../models/User');
+    const { generateMessageSuggestions } = require('../utils/gemini');
+    
+    const isMongoConnected = require('mongoose').connection.readyState === 1;
+
+    // Fetch sender and receiver profiles
+    let sender, receiver;
+    if (!isMongoConnected) {
+      const mockUsers = getAllMockUsers();
+      sender = mockUsers.find(u => u._id === senderId);
+      receiver = mockUsers.find(u => u._id === receiverId);
+    } else {
+      sender = await User.findById(senderId);
+      receiver = await User.findById(receiverId);
+    }
+
+    if (!sender || !receiver) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Generate AI suggestions
+    const startTime = Date.now();
+    const result = await generateMessageSuggestions(sender, receiver, context);
+    const duration = Date.now() - startTime;
+
+    // Log AI usage for monitoring
+    console.log(`[AI Message] Generated ${result.suggestions.length} suggestions (${result.source}) in ${duration}ms`);
 
     res.status(200).json({
       success: true,
       data: {
-        suggestion: randomSuggestion
+        suggestions: result.suggestions,
+        source: result.source,
+        cached: result.cached || false
       }
     });
   } catch (err) {
-    next(err);
+    // Don't let AI errors break the main flow
+    console.error('AI suggest error:', err.message);
+    
+    // Return basic fallback suggestions
+    const fallbackSuggestions = [
+      `Hi! I'd love to connect and see how we can help each other.`,
+      `Hello! I noticed your profile and think we could collaborate.`,
+      `Hey! Let's chat about ways we can support each other in the community.`
+    ];
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        suggestions: fallbackSuggestions,
+        source: 'fallback'
+      }
+    });
   }
 };
 

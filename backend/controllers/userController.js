@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { generateBatchMatchExplanations } = require('../utils/gemini');
+const { generateBatchMatchExplanations, aiEnabled } = require('../utils/gemini');
 
 // Mock data for when MongoDB is not connected
 const baseMockUsers = [
@@ -299,7 +299,10 @@ exports.getUsers = async (req, res, next) => {
 
         if (currentUser) {
           // Generate AI explanations for each neighbor
+          const startTime = Date.now();
           users = await generateBatchMatchExplanations(currentUser, users);
+          const duration = Date.now() - startTime;
+          console.log(`[AI Match] Generated ${users.length} explanations in ${duration}ms`);
         }
       } catch (aiError) {
         // Continue without AI explanations if there's an error
@@ -310,7 +313,8 @@ exports.getUsers = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: users.length,
-      data: users
+      data: users,
+      aiEnabled
     });
   } catch (err) {
     next(err);

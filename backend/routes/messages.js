@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { rateLimitAI } = require('../middleware/rateLimiter');
 const {
   getConversations,
   getMessages,
@@ -13,7 +14,7 @@ router.get('/conversations/:userId', getConversations);
 router.get('/conversation/:conversationId', getMessages);
 router.post('/send', sendMessage);
 router.put('/read/:conversationId', markAsRead);
-router.post('/ai-suggest', aiSuggestMessage);
+router.post('/ai-suggest', rateLimitAI(), aiSuggestMessage);
 router.delete('/:id', deleteMessage);
 
 module.exports = router;

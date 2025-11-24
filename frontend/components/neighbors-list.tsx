@@ -1,11 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MessageCircle, Users, Heart, MapPin, Sparkles, Zap } from 'lucide-react'
+import { MessageCircle, Users, Heart, MapPin, Sparkles, Zap, AlertCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { AIBadge } from '@/components/ui/ai-badge'
+import { AILoading, AISkeletonCard } from '@/components/ui/ai-loading'
 import { userAPI } from '@/lib/api'
 
 interface Neighbor {
@@ -29,6 +31,8 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
   const [neighbors, setNeighbors] = useState<Neighbor[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [aiEnabled, setAiEnabled] = useState(true)
+  const [isAiLoading, setIsAiLoading] = useState(false)
 
   // Default location (Portland, OR)
   const DEFAULT_LAT = 45.5152
@@ -131,6 +135,11 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
         // Get current user ID for AI matching
         const currentUserId = localStorage.getItem('neighbornet_user_id')
         
+        // Set AI loading state when fetching with userId
+        if (currentUserId) {
+          setIsAiLoading(true)
+        }
+        
         const apiFilters = {
           skills: filters.skills || [],
           items: filters.items || [],
@@ -144,6 +153,11 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
         }
 
         const response = await userAPI.getUsers(apiFilters)
+        
+        // Check if AI is enabled from backend response
+        if (response.aiEnabled !== undefined) {
+          setAiEnabled(response.aiEnabled)
+        }
         
         // Filter out current user and transform API data to match component format
         const transformedData = response.data
@@ -186,6 +200,7 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
         setError(err.message)
       } finally {
         setLoading(false)
+        setIsAiLoading(false)
       }
     }
 
@@ -228,14 +243,43 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
         </p>
       </div>
 
+      {/* No Profile Banner */}
+      {!localStorage.getItem('neighbornet_user_id') && !loading && (
+        <div className="p-4 rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="text-purple-500 flex-shrink-0 mt-0.5" size={20} />
+            <div>
+              <h3 className="font-semibold text-sm mb-1">Create your profile for AI-powered matches</h3>
+              <p className="text-xs text-muted-foreground mb-2">
+                Get personalized match explanations and see neighbors sorted by relevance to you.
+              </p>
+              <Button size="sm" variant="outline" onClick={() => router.push('/profile')}>
+                Create Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Status Banner */}
+      {!aiEnabled && !loading && localStorage.getItem('neighbornet_user_id') && (
+        <div className="p-3 rounded-lg border border-orange-500/30 bg-orange-500/10">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="text-orange-500 flex-shrink-0" size={16} />
+            <p className="text-xs text-foreground/80">
+              AI features temporarily unavailable. Showing standard matches.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Neighbors List */}
       <div className="flex-1 overflow-y-auto space-y-3 pr-2">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-3">
-              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-muted-foreground">Loading neighbors...</p>
-            </div>
+          <div className="space-y-3">
+            <AISkeletonCard />
+            <AISkeletonCard />
+            <AISkeletonCard />
           </div>
         ) : error ? (
           <div className="flex items-center justify-center py-20">
@@ -308,14 +352,17 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
                   </div>
 
                   {/* AI Match Reason */}
-                  {neighbor.aiMatchReason && (
-                    <div className="flex items-start gap-2 mb-3 p-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
-                      <Sparkles size={14} className="text-purple-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-foreground/80 leading-relaxed">
-                        {neighbor.aiMatchReason}
-                      </p>
+                  {isAiLoading && !neighbor.aiMatchReason ? (
+                    <div className="mb-3">
+                      <AILoading lines={2} />
                     </div>
-                  )}
+                  ) : neighbor.aiMatchReason ? (
+                    <AIBadge 
+                      text={neighbor.aiMatchReason} 
+                      variant={aiEnabled ? 'success' : 'fallback'}
+                      className="mb-3"
+                    />
+                  ) : null}
 
                   {/* Offers & Needs */}
                   <div className="space-y-2">

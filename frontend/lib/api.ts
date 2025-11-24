@@ -182,10 +182,10 @@ export const messageAPI = {
     }),
 
   // Get AI suggestion
-  getAISuggestion: (data: any) =>
+  getAISuggestion: (senderId: string, receiverId: string, context?: string) =>
     fetchAPI('/messages/ai-suggest', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ senderId, receiverId, context }),
     }),
 
   // Delete message

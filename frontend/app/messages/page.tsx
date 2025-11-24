@@ -7,13 +7,13 @@ import { motion } from 'framer-motion'
 import { MessageCircle, Send, Search, Info } from 'lucide-react'
 import { messageAPI, userAPI } from '@/lib/api'
 import { useSocket } from '@/hooks/useSocket'
+import { AIMessageComposer } from '@/components/ai-message-composer'
 
 export default function MessagesPage() {
   const searchParams = useSearchParams()
   const [conversations, setConversations] = useState<any[]>([])
   const [selectedConversation, setSelectedConversation] = useState<any>(null)
   const [messages, setMessages] = useState<any[]>([])
-  const [messageInput, setMessageInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [sendingMessage, setSendingMessage] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -142,51 +142,6 @@ export default function MessagesPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!messageInput.trim() || !selectedConversation || !userId) return
-
-    setSendingMessage(true)
-
-    try {
-      const otherUser = selectedConversation.participants.find((p: any) => p._id !== userId) || 
-                        selectedConversation.participants[0] // Fallback for temp conversations
-      
-      if (!otherUser) {
-        console.error('No recipient found')
-        return
-      }
-
-      // Always use HTTP API for reliability
-      const response = await messageAPI.sendMessage({
-        senderId: userId,
-        receiverId: otherUser._id,
-        content: messageInput.trim()
-      })
-      
-      // Add message to local state
-      setMessages(prev => [...prev, response.data])
-      
-      // Try Socket.io as well for real-time updates to other user
-      if (isConnected && socket) {
-        socketSendMessage({
-          senderId: userId,
-          receiverId: otherUser._id,
-          content: messageInput.trim(),
-          conversationId: response.data.conversation
-        })
-      }
-
-      setMessageInput('')
-    } catch (err) {
-      console.error('Error sending message:', err)
-      alert('Failed to send message. Please try again.')
-    } finally {
-      setSendingMessage(false)
-    }
-  }
 
   // Format timestamp
   const formatTime = (date: string) => {
@@ -379,30 +334,45 @@ export default function MessagesPage() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Message Input */}
-                <form onSubmit={handleSendMessage} className="p-4 border-t border-border bg-card/50">
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
-                      placeholder="Type a message..."
-                      disabled={sendingMessage}
-                      className="flex-1 px-4 py-3 rounded-full bg-muted border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all disabled:opacity-50"
-                    />
-                    <button
-                      type="submit"
-                      disabled={!messageInput.trim() || sendingMessage}
-                      className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {sendingMessage ? (
-                        <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Send className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </form>
+                {/* Message Input with AI */}
+                <div className="p-4 border-t border-border bg-card/50">
+                  <AIMessageComposer
+                    currentUserId={userId}
+                    targetUserId={selectedConversation.participants.find((p: any) => p._id !== userId)?._id || selectedConversation.participants[0]?._id}
+                    targetUserName={selectedConversation.participants.find((p: any) => p._id !== userId)?.name || selectedConversation.participants[0]?.name}
+                    onSend={async (message) => {
+                      setSendingMessage(true)
+                      try {
+                        const otherUser = selectedConversation.participants.find((p: any) => p._id !== userId) || 
+                                          selectedConversation.participants[0]
+                        
+                        if (!otherUser) return
+
+                        const response = await messageAPI.sendMessage({
+                          senderId: userId,
+                          receiverId: otherUser._id,
+                          content: message
+                        })
+                        
+                        setMessages(prev => [...prev, response.data])
+                        
+                        if (isConnected && socket) {
+                          socketSendMessage({
+                            senderId: userId,
+                            receiverId: otherUser._id,
+                            content: message,
+                            conversationId: response.data.conversation
+                          })
+                        }
+                      } catch (err) {
+                        console.error('Error sending message:', err)
+                        alert('Failed to send message. Please try again.')
+                      } finally {
+                        setSendingMessage(false)
+                      }
+                    }}
+                  />
+                </div>
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center text-center p-8">
