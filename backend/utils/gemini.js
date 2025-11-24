@@ -244,8 +244,9 @@ async function generateBatchMatchExplanations(currentUser, neighbors) {
  * @returns {Promise<Object>} { suggestions: string[], source: 'ai' | 'fallback' }
  */
 async function generateMessageSuggestions(sender, receiver, context = '') {
-  // Create cache key
-  const cacheKey = `${sender._id}-${receiver._id}`;
+  // Create cache key including context to avoid stale suggestions
+  const contextKey = context ? `-${context.substring(0, 20)}` : '';
+  const cacheKey = `${sender._id}-${receiver._id}${contextKey}`;
   
   // Return cached suggestions if available
   const cached = messageCache.get(cacheKey);

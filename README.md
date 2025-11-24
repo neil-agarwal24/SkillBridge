@@ -66,15 +66,34 @@ npm run dev
 
 ## 🔑 Environment Variables
 
-Create a `.env` file in the `backend` directory:
+### Backend (.env in `/backend`)
 
+**Required for AI features:**
 ```env
 PORT=5001
 MONGODB_URI=mongodb://localhost:27017/neighbornet
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# AI Configuration (optional, has defaults)
+AI_CACHE_TTL_MINUTES=60
+AI_CACHE_MAX_SIZE=1000
+AI_RATE_LIMIT_PER_MINUTE=30
 ```
 
 Get your Gemini API key from: https://makersuite.google.com/app/apikey
+
+**Without GEMINI_API_KEY:** AI features will use rule-based fallbacks
+
+### Frontend (.env.local in `/frontend`)
+
+**Required for production:**
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5001/api
+NEXT_PUBLIC_SOCKET_URL=http://localhost:5001
+NEXT_PUBLIC_ENABLE_AI=true
+```
+
+**For deployment:** Update URLs to your production backend URL
 
 ## 🎮 Usage
 
@@ -129,15 +148,37 @@ cd frontend && npm run dev
 
 ## 🌐 Deployment
 
-### Frontend (Vercel)
+### ⚠️ Required Environment Variables
+
+**Backend Production (.env):**
+- `GEMINI_API_KEY` - **Required** for AI features (or fallbacks will be used)
+- `MONGODB_URI` - Database connection string
+- `PORT` - Default 5001
+- `CLIENT_URL` - Frontend URL for CORS
+- `AI_CACHE_TTL_MINUTES`, `AI_CACHE_MAX_SIZE`, `AI_RATE_LIMIT_PER_MINUTE` - Optional AI config
+
+**Frontend Production (.env.local or platform config):**
+- `NEXT_PUBLIC_API_URL` - **Required** - Backend API URL (e.g., `https://api.yourapp.com/api`)
+- `NEXT_PUBLIC_SOCKET_URL` - **Required** - Backend WebSocket URL (e.g., `https://api.yourapp.com`)
+- Without these, frontend defaults to `localhost:5001` and will fail in production
+
+### Frontend (Vercel/Netlify)
 ```bash
 cd frontend
+# Set environment variables in platform dashboard
 vercel deploy
 ```
 
-### Backend (Railway/Heroku)
+### Backend (Railway/Heroku/Render)
 ```bash
 cd backend
-# Add MongoDB Atlas connection string to env
-git push railway main
+# Set environment variables in platform dashboard
+# Add MongoDB Atlas connection string
+railway up
+# or
+git push heroku main
 ```
+
+### Health Checks
+- Backend: `GET /api/health`
+- AI Status: `GET /api/ai/stats` (shows cache hit rate, AI enabled status)

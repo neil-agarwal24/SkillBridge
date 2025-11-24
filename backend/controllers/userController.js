@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { generateBatchMatchExplanations, aiEnabled } = require('../utils/gemini');
+const { generateBatchMatchExplanations, aiEnabled, clearUserCache } = require('../utils/gemini');
 
 // Mock data for when MongoDB is not connected
 const baseMockUsers = [
@@ -380,6 +380,9 @@ exports.createUser = async (req, res, next) => {
 // @access  Public
 exports.updateUser = async (req, res, next) => {
   try {
+    // Clear AI cache for this user when profile is updated
+    clearUserCache(req.params.id);
+    
     const isMongoConnected = require('mongoose').connection.readyState === 1;
     
     let user;
@@ -428,6 +431,9 @@ exports.updateUser = async (req, res, next) => {
 // @access  Public
 exports.deleteUser = async (req, res, next) => {
   try {
+    // Clear AI cache for this user when deleted
+    clearUserCache(req.params.id);
+    
     const isMongoConnected = require('mongoose').connection.readyState === 1;
     
     let user;

@@ -4,9 +4,10 @@ import { motion } from 'framer-motion'
 import { ZoomIn, ZoomOut, RotateCcw, Info } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
+import { userAPI } from '@/lib/api'
 
-// Mock neighbor data for map - matching our 8 dummy accounts
-const MAP_NEIGHBORS = [
+// Fallback mock neighbor data for map when API fails
+const FALLBACK_MAP_NEIGHBORS = [
   {
     id: 1,
     name: 'Sarah Chen',
@@ -114,8 +115,57 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
   const [hoveredNode, setHoveredNode] = useState(null)
   const [perspective, setPerspective] = useState({ x: 0, y: 0 })
   const [showInfo, setShowInfo] = useState(true)
+  const [mapNeighbors, setMapNeighbors] = useState(FALLBACK_MAP_NEIGHBORS)
+  const [loading, setLoading] = useState(true)
   const svgRef = useRef(null)
   const containerRef = useRef(null)
+
+  // Fetch real neighbors from API
+  useEffect(() => {
+    async function fetchMapNeighbors() {
+      try {
+        const currentUserId = localStorage.getItem('neighbornet_user_id')
+        const response = await userAPI.getUsers({
+          distance: 10,
+          lat: 37.7749,
+          lng: -122.4194,
+          userId: currentUserId || undefined
+        })
+        
+        if (response.data && response.data.length > 0) {
+          // Transform API data to map format
+          const transformedNeighbors = response.data.slice(0, 8).map((user: any, index: number) => ({
+            id: user._id,
+            name: user.name,
+            x: 20 + (index % 3) * 30 + Math.random() * 10,
+            y: 20 + Math.floor(index / 3) * 25 + Math.random() * 10,
+            type: user.userType || 'balanced',
+            offers: [
+              ...user.skillsOffered?.map((s: any) => s.name) || [],
+              ...user.itemsOffered?.map((i: any) => i.name) || []
+            ],
+            needs: [
+              ...user.skillsNeeded?.map((s: any) => s.name) || [],
+              ...user.itemsNeeded?.map((i: any) => i.name) || []
+            ],
+            distance: user.location?.latitude 
+              ? Math.sqrt(Math.pow(37.7749 - user.location.latitude, 2) + Math.pow(-122.4194 - user.location.longitude, 2)) * 69
+              : Math.random() * 2,
+            avatar: user.avatar || '👤',
+            aiMatchReason: user.aiMatchReason
+          }))
+          setMapNeighbors(transformedNeighbors)
+        }
+      } catch (error) {
+        console.error('Failed to load map neighbors, using fallback:', error)
+        // Keep using FALLBACK_MAP_NEIGHBORS
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchMapNeighbors()
+  }, [filters])
 
   // Enhanced 3D perspective tracking
   const handleMouseMove = (e) => {
@@ -265,8 +315,8 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
             {/* Connection lines with smooth animations */}
             <g opacity="0.5" className="pointer-events-none">
               {CONNECTIONS.map((conn, idx) => {
-                const node1 = MAP_NEIGHBORS[conn[0]]
-                const node2 = MAP_NEIGHBORS[conn[1]]
+                const node1 = mapNeighbors[conn[0]]
+                const node2 = mapNeighbors[conn[1]]
                 const isActive = selectedNeighbor?.id === node1.id || selectedNeighbor?.id === node2.id
                 const isNearHovered = hoveredNode === node1.id || hoveredNode === node2.id
                 
@@ -293,7 +343,7 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
             </g>
 
             {/* Nodes with enhanced 3D appearance */}
-            {MAP_NEIGHBORS.map((neighbor, idx) => {
+            {mapNeighbors.map((neighbor, idx) => {
               const isSelected = selectedNeighbor?.id === neighbor.id
               const isHovered = hoveredNode === neighbor.id
               const nodeScale = isSelected ? 1.6 : isHovered ? 1.3 : 1

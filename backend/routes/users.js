@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { rateLimitAI } = require('../middleware/rateLimiter');
 const {
   getUsers,
   getUser,
@@ -15,8 +16,9 @@ const {
   awardPoints
 } = require('../controllers/userController');
 
+// Apply rate limiting to getUsers when userId is provided (triggers AI)
 router.route('/')
-  .get(getUsers)
+  .get(rateLimitAI(), getUsers)
   .post(createUser);
 
 router.route('/leaderboard')
