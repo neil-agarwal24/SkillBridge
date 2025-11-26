@@ -13,6 +13,7 @@ const users = [
     bio: 'Piano teacher with a passion for music education and sustainable gardening. Love sharing knowledge and growing community.',
     tagline: 'Piano teacher & gardening enthusiast',
     avatar: '/woman-with-smile.jpg',
+    preferredLanguage: 'zh', // Chinese
     location: {
       address: '123 Oak Street',
       city: 'Portland',
@@ -47,6 +48,7 @@ const users = [
     bio: 'Retired handyman who loves helping neighbors. Volunteering keeps me active and connected to the community.',
     tagline: 'Handyman & volunteer',
     avatar: '/smiling-man.png',
+    preferredLanguage: 'en', // English
     location: {
       address: '456 Maple Ave',
       city: 'Portland',
@@ -79,6 +81,7 @@ const users = [
     bio: 'New mom looking to build community and share our family\'s love of cooking and culture.',
     tagline: 'New mom looking to connect',
     avatar: '/woman-happy.jpg',
+    preferredLanguage: 'es', // Spanish
     location: {
       address: '789 Pine Rd',
       city: 'Portland',
@@ -113,6 +116,7 @@ const users = [
     bio: 'Software engineer and maker. I build things with code and hardware. Always happy to help troubleshoot tech issues.',
     tagline: 'Tech enthusiast & maker',
     avatar: '/casual-man.png',
+    preferredLanguage: 'fr', // French
     location: {
       address: '321 Cedar Ln',
       city: 'Portland',
@@ -145,6 +149,7 @@ const users = [
     bio: 'Local artist and community organizer. I believe art brings people together and strengthens neighborhoods.',
     tagline: 'Artist & community builder',
     avatar: '/woman-friendly.jpg',
+    preferredLanguage: 'ko', // Korean
     location: {
       address: '654 Birch St',
       city: 'Portland',
@@ -179,6 +184,7 @@ const users = [
     bio: 'Retired CPA who loves mentoring young professionals. Still sharp with numbers and business strategy.',
     tagline: 'Retired accountant, loves mentoring',
     avatar: '/professional-man.png',
+    preferredLanguage: 'ar', // Arabic
     location: {
       address: '987 Elm Dr',
       city: 'Portland',

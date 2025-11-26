@@ -1,5 +1,7 @@
 const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
+const User = require('../models/User');
+const { translateText } = require('../utils/translation');
 
 // Mock data for when MongoDB is not connected
 let mockConversations = [];
@@ -97,6 +99,20 @@ exports.getMessages = async (req, res, next) => {
         .skip(parseInt(skip));
       
       messages = messages.reverse();
+      
+      // Add translatedText field for UI consistency
+      messages = messages.map(msg => {
+        const msgObj = msg.toObject();
+        if (msgObj.translations && msgObj.translations instanceof Map) {
+          // For now, just convert the Map to an object for easier access
+          const translationsObj = {};
+          msgObj.translations.forEach((value, key) => {
+            translationsObj[key] = value;
+          });
+          msgObj.translations = translationsObj;
+        }
+        return msgObj;
+      });
     }
 
     res.status(200).json({
@@ -115,7 +131,42 @@ exports.getMessages = async (req, res, next) => {
 exports.sendMessage = async (req, res, next) => {
   try {
     const isMongoConnected = require('mongoose').connection.readyState === 1;
-    const { senderId, receiverId, content, messageType } = req.body;
+    const { senderId, receiverId, content, messageType, translationData } = req.body;
+
+    // Get sender and receiver language preferences (only if MongoDB connected)
+    let senderLang = 'en';
+    let receiverLang = 'en';
+    let translatedContent = content;
+    let shouldTranslate = false;
+
+    // Use client-provided translation if available (from preview)
+    if (translationData && translationData.translation && !translationData.failed) {
+      senderLang = translationData.sourceLang || 'en';
+      receiverLang = translationData.targetLang || 'en';
+      translatedContent = translationData.translation;
+      shouldTranslate = true;
+    } else if (isMongoConnected) {
+      // Only translate server-side if client didn't provide translation
+      const [sender, receiver] = await Promise.all([
+        User.findById(senderId).select('preferredLanguage'),
+        User.findById(receiverId).select('preferredLanguage')
+      ]);
+
+      if (sender && receiver) {
+        senderLang = sender.preferredLanguage || 'en';
+        receiverLang = receiver.preferredLanguage || 'en';
+        
+        // Fast-path: skip translation if same language
+        if (senderLang !== receiverLang) {
+          const translationResult = await translateText(content, receiverLang, senderLang);
+          // Only store translation if it actually succeeded
+          if (!translationResult.failed && !translationResult.skipped) {
+            translatedContent = translationResult.translatedText;
+            shouldTranslate = true;
+          }
+        }
+      }
+    }
 
     let message;
     if (!isMongoConnected) {
@@ -159,14 +210,22 @@ exports.sendMessage = async (req, res, next) => {
       // Find or create conversation
       const conversation = await Conversation.findOrCreate(senderId, receiverId);
 
-      // Create message
-      message = await Message.create({
+      // Create message with translation data
+      const messageData = {
         conversation: conversation._id,
         sender: senderId,
         receiver: receiverId,
-        content,
+        content, // Original text (what sender typed)
+        originalLanguage: senderLang,
         messageType: messageType || 'text'
-      });
+      };
+
+      // Store translation only if languages differ
+      if (shouldTranslate && translatedContent !== content) {
+        messageData.translations = new Map([[receiverLang, translatedContent]]);
+      }
+
+      message = await Message.create(messageData);
 
       // Update conversation
       conversation.lastMessage = message._id;
@@ -181,6 +240,14 @@ exports.sendMessage = async (req, res, next) => {
       // Populate message for response
       await message.populate('sender', 'name avatar');
       await message.populate('receiver', 'name avatar');
+      
+      // Convert to object and add translatedText for UI consistency
+      const messageObj = message.toObject();
+      if (messageObj.translations && messageObj.translations instanceof Map) {
+        // Get the translation for the receiver's language
+        messageObj.translatedText = messageObj.translations.get(receiverLang) || null;
+      }
+      message = messageObj;
     }
 
     res.status(201).json({

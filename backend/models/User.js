@@ -147,6 +147,11 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  preferredLanguage: {
+    type: String,
+    default: 'en',
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

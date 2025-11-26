@@ -4,10 +4,12 @@ import { Footer } from '@/components/footer'
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { MessageCircle, Send, Search, Info } from 'lucide-react'
+import { MessageCircle, Send, Search, Info, Globe } from 'lucide-react'
 import { messageAPI, userAPI } from '@/lib/api'
 import { useSocket } from '@/hooks/useSocket'
 import { AIMessageComposer } from '@/components/ai-message-composer'
+import { TranslationBadge } from '@/components/ui/translation-badge'
+import { Button } from '@/components/ui/button'
 
 export default function MessagesPage() {
   const searchParams = useSearchParams()
@@ -16,13 +18,40 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [sendingMessage, setSendingMessage] = useState(false)
+  const [userLanguage, setUserLanguage] = useState<string>('en')
+  const [showOriginal, setShowOriginal] = useState<{[key: string]: boolean}>({})
+  const [mounted, setMounted] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Get current user ID from localStorage
-  const userId = typeof window !== 'undefined' ? localStorage.getItem('neighbornet_user_id') : null
+  // Get current user ID from localStorage (only on client)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  // Initialize on mount to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+    if (typeof window !== 'undefined') {
+      setUserId(localStorage.getItem('neighbornet_user_id'))
+    }
+  }, [])
 
   // Initialize Socket.io
   const { socket, isConnected, sendMessage: socketSendMessage, on, off } = useSocket(userId || undefined)
+
+  // Load user's preferred language
+  useEffect(() => {
+    async function loadUserLanguage() {
+      if (!userId) return
+      try {
+        const response = await userAPI.getUser(userId)
+        if (response?.success && response.data?.preferredLanguage) {
+          setUserLanguage(response.data.preferredLanguage)
+        }
+      } catch (err) {
+        console.error('Failed to load user language:', err)
+      }
+    }
+    loadUserLanguage()
+  }, [userId])
 
   // Load conversations on mount
   useEffect(() => {
@@ -149,7 +178,8 @@ export default function MessagesPage() {
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
   }
 
-  if (!userId) {
+  // Show loading state during SSR and initial mount to avoid hydration mismatch
+  if (!mounted || !userId) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <main className="flex-1 flex items-center justify-center">
@@ -299,6 +329,18 @@ export default function MessagesPage() {
                   {messages.map((message: any, index) => {
                     const isOwn = message.sender._id === userId || message.sender === userId
                     const showAvatar = index === 0 || messages[index - 1].sender._id !== message.sender._id
+                    
+                    // Check if message has translation
+                    // translatedText comes from socket, translations comes from DB API
+                    const translatedText = message.translatedText || 
+                                          (message.translations && typeof message.translations === 'object' 
+                                            ? message.translations[userLanguage] 
+                                            : null)
+                    const hasTranslation = !isOwn && translatedText && message.originalLanguage && message.originalLanguage !== userLanguage
+                    const displayText = hasTranslation && !showOriginal[message._id]
+                      ? translatedText
+                      : message.content
+                    const isShowingTranslation = hasTranslation && !showOriginal[message._id]
 
                     return (
                       <motion.div
@@ -322,11 +364,33 @@ export default function MessagesPage() {
                                 : 'bg-accent text-accent-foreground rounded-tl-sm'
                             }`}
                           >
-                            <p className="text-sm leading-relaxed">{message.content}</p>
+                            <p className="text-sm leading-relaxed">{displayText}</p>
                           </div>
-                          <span className="text-xs text-muted-foreground mt-1 px-1">
-                            {formatTime(message.createdAt)}
-                          </span>
+                          <div className="flex items-center gap-2 mt-1 px-1">
+                            <span className="text-xs text-muted-foreground">
+                              {formatTime(message.createdAt)}
+                            </span>
+                            {hasTranslation && translatedText && (
+                              <>
+                                <TranslationBadge
+                                  variant={isShowingTranslation ? 'translated' : 'original'}
+                                  languageName={message.originalLanguage || 'unknown'}
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-5 px-2 text-xs"
+                                  onClick={() => setShowOriginal(prev => ({
+                                    ...prev,
+                                    [message._id]: !prev[message._id]
+                                  }))}
+                                >
+                                  <Globe className="h-3 w-3 mr-1" />
+                                  {isShowingTranslation ? 'Show original' : 'Show translation'}
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </motion.div>
                     )
@@ -340,7 +404,7 @@ export default function MessagesPage() {
                     currentUserId={userId}
                     targetUserId={selectedConversation.participants.find((p: any) => p._id !== userId)?._id || selectedConversation.participants[0]?._id}
                     targetUserName={selectedConversation.participants.find((p: any) => p._id !== userId)?.name || selectedConversation.participants[0]?.name}
-                    onSend={async (message) => {
+                    onSend={async (message, translationData) => {
                       setSendingMessage(true)
                       try {
                         const otherUser = selectedConversation.participants.find((p: any) => p._id !== userId) || 
@@ -351,7 +415,8 @@ export default function MessagesPage() {
                         const response = await messageAPI.sendMessage({
                           senderId: userId,
                           receiverId: otherUser._id,
-                          content: message
+                          content: message,
+                          ...(translationData && { translationData })
                         })
                         
                         setMessages(prev => [...prev, response.data])
@@ -361,7 +426,12 @@ export default function MessagesPage() {
                             senderId: userId,
                             receiverId: otherUser._id,
                             content: message,
-                            conversationId: response.data.conversation
+                            conversationId: response.data.conversation,
+                            ...(translationData && {
+                              translatedContent: translationData.translation,
+                              originalLanguage: translationData.sourceLang,
+                              targetLanguage: translationData.targetLang
+                            })
                           })
                         }
                       } catch (err) {

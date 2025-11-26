@@ -1,17 +1,18 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Sparkles, RefreshCw, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { messageAPI } from '@/lib/api'
+import { messageAPI, translationAPI, userAPI } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { TranslationPreview } from './translation-preview'
 
 interface AIMessageComposerProps {
   currentUserId: string
   targetUserId: string
   targetUserName?: string
-  onSend: (message: string) => void
+  onSend: (message: string, translationData?: any) => void
   className?: string
 }
 
@@ -28,6 +29,118 @@ export function AIMessageComposer({
   const [loading, setLoading] = useState(false)
   const [source, setSource] = useState<'ai' | 'fallback' | null>(null)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  
+  // Translation state
+  const [targetLanguage, setTargetLanguage] = useState<string>('en')
+  const [senderLanguage, setSenderLanguage] = useState<string>('en')
+  const [translationPreview, setTranslationPreview] = useState<string>('')
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [showTranslationPreview, setShowTranslationPreview] = useState(false)
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+
+  // Fetch user languages on mount
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      // Skip if no user IDs provided
+      if (!currentUserId || !targetUserId) {
+        setSenderLanguage('en');
+        setTargetLanguage('en');
+        return;
+      }
+
+      try {
+        const [senderRes, targetRes] = await Promise.all([
+          userAPI.getUser(currentUserId),
+          userAPI.getUser(targetUserId)
+        ]);
+        
+        // Use language preference if user exists and has one, otherwise default to 'en'
+        if (senderRes?.success && senderRes?.data?.preferredLanguage) {
+          setSenderLanguage(senderRes.data.preferredLanguage);
+        } else {
+          setSenderLanguage('en');
+        }
+        
+        if (targetRes?.success && targetRes?.data?.preferredLanguage) {
+          setTargetLanguage(targetRes.data.preferredLanguage);
+        } else {
+          setTargetLanguage('en');
+        }
+      } catch (error) {
+        // Silently use defaults on error - user might not exist yet
+        setSenderLanguage('en');
+        setTargetLanguage('en');
+      }
+    };
+    
+    fetchLanguages();
+  }, [currentUserId, targetUserId]);
+
+  // Translation preview with debounce
+  const fetchTranslationPreview = useCallback(async (text: string) => {
+    // Skip if message is too short
+    if (text.length < 5) {
+      setShowTranslationPreview(false);
+      return;
+    }
+
+    // Skip if message is too long
+    if (text.length > 1000) {
+      setShowTranslationPreview(false);
+      return;
+    }
+
+    // Skip if same language
+    if (senderLanguage === targetLanguage) {
+      setShowTranslationPreview(false);
+      return;
+    }
+
+    setIsTranslating(true);
+    setShowTranslationPreview(true);
+
+    try {
+      const response = await translationAPI.previewTranslation(text, targetUserId, currentUserId);
+      
+      if (response.success && response.translation) {
+        setTranslationPreview(response.translation);
+      } else {
+        console.warn('Translation preview returned unsuccessful response:', response);
+        setTranslationPreview('Translation unavailable');
+      }
+    } catch (error: any) {
+      // Log translation errors (except user-not-found which is expected)
+      if (error?.status === 503) {
+        console.error('⚠ Translation service unavailable - Gemini API may be blocked or failing');
+      } else if (error?.status !== 404 && !error?.message?.toLowerCase().includes('not found')) {
+        console.error('Translation preview failed:', error);
+      }
+      setTranslationPreview('Translation unavailable');
+    } finally {
+      setIsTranslating(false);
+    }
+  }, [targetUserId, currentUserId, senderLanguage, targetLanguage]);
+
+  // Debounced translation effect
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    if (message) {
+      debounceTimer.current = setTimeout(() => {
+        fetchTranslationPreview(message);
+      }, 500); // 500ms debounce
+    } else {
+      setShowTranslationPreview(false);
+    }
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [message, fetchTranslationPreview]);
 
   const fetchSuggestions = async () => {
     if (!currentUserId || !targetUserId) return
@@ -50,8 +163,11 @@ export function AIMessageComposer({
         ])
         setSource('fallback')
       }
-    } catch (error) {
-      console.error('Failed to fetch AI suggestions:', error)
+    } catch (error: any) {
+      // Silently use fallback suggestions on error (user might not exist yet)
+      if (error?.status !== 404 && !error?.message?.toLowerCase().includes('not found')) {
+        console.error('Failed to fetch AI suggestions:', error)
+      }
       // Fallback suggestions on error
       setSuggestions([
         `Hi ${targetUserName}! I'd love to connect and see how we can help each other.`,
@@ -72,11 +188,20 @@ export function AIMessageComposer({
 
   const handleSend = () => {
     if (message.trim()) {
-      onSend(message)
+      // Include translation data only if languages differ AND translation actually exists
+      const translationData = senderLanguage !== targetLanguage && translationPreview && translationPreview !== 'Translation unavailable' ? {
+        translation: translationPreview,
+        sourceLang: senderLanguage,
+        targetLang: targetLanguage
+      } : undefined;
+
+      onSend(message, translationData)
       setMessage('')
       setSuggestions([])
       setShowSuggestions(false)
       setSelectedIndex(-1)
+      setShowTranslationPreview(false)
+      setTranslationPreview('')
     }
   }
 
@@ -171,14 +296,31 @@ export function AIMessageComposer({
           placeholder={`Message ${targetUserName}...`}
           className="min-h-[100px] resize-none"
         />
+
+        {/* Translation Preview */}
+        {showTranslationPreview && senderLanguage !== targetLanguage && (
+          <TranslationPreview
+            recipientName={targetUserName}
+            recipientLanguage={targetLanguage}
+            translatedText={translationPreview}
+            isLoading={isTranslating}
+          />
+        )}
         
-        <div className="flex justify-end">
-          <Button
-            onClick={handleSend}
-            disabled={!message.trim()}
-          >
-            Send Message
-          </Button>
+        <div className="flex justify-between items-center">
+          {message.length > 1000 && (
+            <span className="text-xs text-red-500">
+              Message too long to translate (max 1000 characters)
+            </span>
+          )}
+          <div className="ml-auto">
+            <Button
+              onClick={handleSend}
+              disabled={!message.trim()}
+            >
+              Send Message
+            </Button>
+          </div>
         </div>
       </div>
     </div>

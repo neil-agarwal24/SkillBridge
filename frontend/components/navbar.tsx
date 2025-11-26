@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Menu, X, MessageCircle, Home, MapPin, User, Trophy } from 'lucide-react'
+import { Menu, X, MessageCircle, Home, MapPin, User, Trophy, AlertTriangle } from 'lucide-react'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -21,6 +21,7 @@ export function Navbar() {
     { label: 'Home', href: '/', icon: Home },
     { label: 'Discover', href: '/discover', icon: MapPin },
     { label: 'Messages', href: '/messages', icon: MessageCircle },
+    { label: 'Emergency', href: '/emergency', icon: AlertTriangle, highlight: true },
     { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
   ]
 
@@ -38,7 +39,7 @@ export function Navbar() {
               <span className="relative z-10">N</span>
             </motion.div>
             <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-300 hidden sm:inline">
-              NeighborNet
+              SynapseAI
             </span>
           </Link>
 
@@ -50,7 +51,11 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="px-4 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300 flex items-center gap-2"
+                  className={`px-4 py-2 rounded-lg text-sm transition-all duration-300 flex items-center gap-2 ${
+                    item.highlight 
+                      ? 'bg-red-600 text-white hover:bg-red-700 font-semibold' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
                 >
                   <Icon className="w-4 h-4" />
                   {item.label}

@@ -33,10 +33,18 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
   const [error, setError] = useState<string | null>(null)
   const [aiEnabled, setAiEnabled] = useState(true)
   const [isAiLoading, setIsAiLoading] = useState(false)
+  const [hasUserId, setHasUserId] = useState(false)
 
   // Default location (Portland, OR)
   const DEFAULT_LAT = 45.5152
   const DEFAULT_LNG = -122.6784
+
+  // Check for userId on client side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHasUserId(!!localStorage.getItem('neighbornet_user_id'))
+    }
+  }, [])
 
   // Sort neighbors by relevance to current user's profile
   const sortByRelevance = async (neighbors: any[], userId: string | null) => {
@@ -132,8 +140,8 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
         setLoading(true)
         setError(null)
         
-        // Get current user ID for AI matching
-        const currentUserId = localStorage.getItem('neighbornet_user_id')
+        // Get current user ID for AI matching (client-side only)
+        const currentUserId = typeof window !== 'undefined' ? localStorage.getItem('neighbornet_user_id') : null
         
         // Set AI loading state when fetching with userId
         if (currentUserId) {
@@ -244,7 +252,7 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
       </div>
 
       {/* No Profile Banner */}
-      {!localStorage.getItem('neighbornet_user_id') && !loading && (
+      {!hasUserId && !loading && (
         <div className="p-4 rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-blue-500/10">
           <div className="flex items-start gap-3">
             <AlertCircle className="text-purple-500 flex-shrink-0 mt-0.5" size={20} />
@@ -262,7 +270,7 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
       )}
 
       {/* AI Status Banner */}
-      {!aiEnabled && !loading && localStorage.getItem('neighbornet_user_id') && (
+      {!aiEnabled && !loading && hasUserId && (
         <div className="p-3 rounded-lg border border-orange-500/30 bg-orange-500/10">
           <div className="flex items-center gap-2">
             <AlertCircle className="text-orange-500 flex-shrink-0" size={16} />
@@ -457,8 +465,8 @@ export function NeighborsList({ filters, selectedNeighbor, onSelectNeighbor }: a
                         onClick={async (e) => {
                           e.stopPropagation()
                           try {
-                            // Award points to current user for making a connection
-                            const currentUserId = localStorage.getItem('neighbornet_user_id')
+                            // Award points to current user for making a connection (client-side only)
+                            const currentUserId = typeof window !== 'undefined' ? localStorage.getItem('neighbornet_user_id') : null
                             if (!currentUserId) {
                               alert('Please create a profile first to connect with neighbors!')
                               return

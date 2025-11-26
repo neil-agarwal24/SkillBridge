@@ -63,7 +63,7 @@ export function HeroSection() {
               variants={itemVariants}
               className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg"
             >
-              Connect with neighbors across your community to exchange skills, borrow tools, and build lasting relationships. NeighborNet breaks down barriers and brings people together.
+              Connect with neighbors across your community to exchange skills, borrow tools, and build lasting relationships. SynapseAI breaks down barriers and brings people together.
             </motion.p>
 
             <motion.div

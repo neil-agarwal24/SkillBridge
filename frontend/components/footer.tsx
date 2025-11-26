@@ -42,7 +42,7 @@ export function Footer() {
                 N
               </div>
               <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">
-                NeighborNet
+                SynapseAI
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -89,11 +89,11 @@ export function Footer() {
             <h4 className="font-semibold text-foreground mb-4">Get In Touch</h4>
             <div className="space-y-3">
               <a 
-                href="mailto:hello@neighbornet.app" 
+                href="mailto:hello@bridgeai.app" 
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:translate-x-1 transition-all"
               >
                 <Mail size={16} className="flex-shrink-0" />
-                hello@neighbornet.app
+                hello@synapseai.app
               </a>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin size={16} className="flex-shrink-0" />

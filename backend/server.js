@@ -14,6 +14,8 @@ dotenv.config();
 // Route files
 const userRoutes = require('./routes/users');
 const messageRoutes = require('./routes/messages');
+const translationRoutes = require('./routes/translation');
+const emergencyRoutes = require('./routes/emergencies');
 
 // Initialize express app
 const app = express();
@@ -82,6 +84,8 @@ app.get('/api/health', (req, res) => {
 // Mount routers
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/translation', translationRoutes);
+app.use('/api/emergencies', emergencyRoutes);
 
 // AI monitoring endpoint (optional - for debugging)
 app.get('/api/ai/stats', (req, res) => {

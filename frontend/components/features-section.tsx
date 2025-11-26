@@ -46,7 +46,7 @@ export function FeaturesSection() {
             How It Works
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            NeighborNet makes community connection simple, safe, and rewarding
+            SynapseAI makes community connection simple, safe, and rewarding
           </p>
         </motion.div>
 

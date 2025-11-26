@@ -10,7 +10,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'NeighborNet - Share Skills, Share Stuff, Shrink the Gap',
+  title: 'SynapseAI - Share Skills, Share Stuff, Shrink the Gap',
   description: 'Connect with your neighbors to share skills, resources, and build community',
   generator: 'v0.app',
   icons: {
@@ -38,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans antialiased" suppressHydrationWarning>
         <Navbar />
         <Suspense fallback={null}>
           {children}

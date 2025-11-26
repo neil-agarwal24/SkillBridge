@@ -22,6 +22,15 @@ const MessageSchema = new mongoose.Schema({
     trim: true,
     maxlength: [2000, 'Message cannot exceed 2000 characters']
   },
+  originalLanguage: {
+    type: String,
+    default: 'en'
+  },
+  translations: {
+    type: Map,
+    of: String,
+    default: new Map()
+  },
   messageType: {
     type: String,
     enum: ['text', 'image', 'file', 'system'],

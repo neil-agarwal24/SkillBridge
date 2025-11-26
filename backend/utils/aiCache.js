@@ -177,4 +177,9 @@ class LRUCache {
   }
 }
 
+// Create singleton instance for AI cache
+const aiCacheInstance = new LRUCache(1000, 60);
+
+// Export both class and singleton
 module.exports = LRUCache;
+module.exports.getAICache = () => aiCacheInstance;

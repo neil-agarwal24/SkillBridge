@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Camera, Plus, X } from 'lucide-react'
 import { userAPI } from '@/lib/api'
+import { LanguageSelector } from '@/components/language-selector'
 
 const SKILL_OPTIONS = [
   'Tutoring', 'Coding', 'Graphic Design', 'Gardening', 'Home Repair', 
@@ -32,6 +33,7 @@ export default function ProfilePage() {
     needsSkills: [],
     needsItems: [],
     availability: [],
+    preferredLanguage: 'en',
   })
   const [userId, setUserId] = useState(null)
   const [showSkills, setShowSkills] = useState(false)
@@ -106,6 +108,7 @@ export default function ProfilePage() {
               needsSkills: user.skillsNeeded?.map((s: any) => s.name) || [],
               needsItems: user.itemsNeeded?.map((i: any) => i.name) || [],
               availability: user.availability || [],
+              preferredLanguage: user.preferredLanguage || 'en',
             })
           } else {
             // User ID exists but no profile found - clear it
@@ -164,6 +167,7 @@ export default function ProfilePage() {
           description: ''
         })),
         availability: profileData.availability,
+        preferredLanguage: profileData.preferredLanguage,
         userType: 'balanced',
         isNew: true
       }
@@ -464,6 +468,19 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
+            </motion.div>
+
+            {/* Language Preference */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.35 }}
+              className="space-y-4"
+            >
+              <LanguageSelector
+                value={profileData.preferredLanguage}
+                onChange={(lang) => handleInputChange('preferredLanguage', lang)}
+              />
             </motion.div>
 
             {/* Save Message */}

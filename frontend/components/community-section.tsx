@@ -13,7 +13,7 @@ const testimonials = [
   {
     name: 'Marcus Johnson',
     role: 'Electrician',
-    content: 'Being able to help neighbors while building meaningful connections is exactly why I joined. NeighborNet feels genuine.',
+    content: 'Being able to help neighbors while building meaningful connections is exactly why I joined. SynapseAI feels genuine.',
     initials: 'MJ',
   },
   {

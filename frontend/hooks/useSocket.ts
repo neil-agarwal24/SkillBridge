@@ -8,9 +8,13 @@ export function useSocket(userId?: string) {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Create socket connection
+    // Create socket connection with fallback configuration
     const socket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'], // Try polling first to avoid WebSocket errors
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+      timeout: 10000,
     });
 
     socketRef.current = socket;
@@ -32,7 +36,31 @@ export function useSocket(userId?: string) {
     });
 
     socket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
+      // Suppress websocket errors - Socket.io will auto-fallback to polling
+      if (!error.message?.includes('websocket')) {
+        console.error('Socket connection error:', error);
+      }
+      setIsConnected(false);
+    });
+
+    socket.on('error', (error) => {
+      // Suppress websocket errors - Socket.io will auto-fallback to polling
+      if (error && typeof error === 'object' && 'message' in error) {
+        if (!error.message?.includes('websocket')) {
+          console.error('Socket error:', error);
+        }
+      }
+    });
+
+    // Suppress WebSocket transport errors - Socket.io automatically falls back to polling
+    socket.io.on('error', (error) => {
+      // Silently handle WebSocket transport errors
+      const errorStr = error?.toString() || '';
+      if (errorStr.includes('websocket') || errorStr.includes('transport')) {
+        // WebSocket failed, will fallback to polling automatically - this is normal
+        return;
+      }
+      console.error('Socket.io engine error:', error);
     });
 
     // Cleanup on unmount

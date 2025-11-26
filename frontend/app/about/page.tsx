@@ -23,7 +23,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' },
+    transition: { duration: 0.5 },
   },
 }
 
@@ -215,7 +215,7 @@ export default function AboutPage() {
                   {
                     icon: Users,
                     title: '1. List Offers & Needs',
-                    description: 'Share what you can teach, lend, or help with. List what you're looking for. No offer is too small.',
+                    description: 'Share what you can teach, lend, or help with. List what you\'re looking for. No offer is too small.',
                   },
                   {
                     icon: Zap,

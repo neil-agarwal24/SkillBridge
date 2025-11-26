@@ -21,7 +21,14 @@ async function fetchAPI(endpoint: string, options: FetchOptions = {}) {
     const data = await response.json();
 
     if (!response.ok) {
-      const error = new Error(data.message || 'Something went wrong');
+      const errorMessage = data.error || data.message || `Request failed with status ${response.status}`;
+      console.error('API Error:', {
+        url,
+        status: response.status,
+        message: errorMessage,
+        responseData: data
+      });
+      const error = new Error(errorMessage);
       (error as any).status = response.status;
       (error as any).data = data;
       throw error;
@@ -29,6 +36,17 @@ async function fetchAPI(endpoint: string, options: FetchOptions = {}) {
 
     return data;
   } catch (error: any) {
+    // Handle network errors
+    if (!error.status) {
+      console.error('Network Error:', {
+        url,
+        message: error.message,
+        type: error.name
+      });
+      const networkError = new Error(`Network error: Unable to reach server at ${API_BASE_URL}`);
+      (networkError as any).originalError = error;
+      throw networkError;
+    }
     // Don't log 404 errors - they're expected for missing profiles
     if (error.status !== 404) {
       console.error('API Error:', error);
@@ -195,11 +213,81 @@ export const messageAPI = {
     }),
 };
 
+// Translation API
+export const translationAPI = {
+  // Preview translation for live typing
+  previewTranslation: (text: string, recipientId: string, senderId?: string) =>
+    fetchAPI('/translation/preview', {
+      method: 'POST',
+      body: JSON.stringify({ text, recipientId, senderId }),
+    }),
+
+  // Get translation stats
+  getStats: () => fetchAPI('/translation/stats'),
+};
+
+// Emergency API
+export const emergencyAPI = {
+  // Create emergency broadcast
+  createEmergency: (data: {
+    type: string;
+    severity: number;
+    description: string;
+    requesterId: string;
+  }) =>
+    fetchAPI('/emergencies', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  // Get emergency details
+  getEmergency: (emergencyId: string) =>
+    fetchAPI(`/emergencies/${emergencyId}`),
+
+  // Respond to emergency
+  respondToEmergency: (emergencyId: string, userId: string) =>
+    fetchAPI(`/emergencies/${emergencyId}/respond`, {
+      method: 'PATCH',
+      body: JSON.stringify({ userId }),
+    }),
+
+  // Update responder status
+  updateResponderStatus: (emergencyId: string, userId: string, status: string) =>
+    fetchAPI(`/emergencies/${emergencyId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ userId, status }),
+    }),
+
+  // Resolve emergency
+  resolveEmergency: (emergencyId: string, userId: string) =>
+    fetchAPI(`/emergencies/${emergencyId}/resolve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ userId }),
+    }),
+
+  // Get active emergencies
+  getActiveEmergencies: () =>
+    fetchAPI('/emergencies/active'),
+
+  // Get emergency history
+  getEmergencyHistory: (userId: string) =>
+    fetchAPI(`/emergencies/history?userId=${userId}`),
+
+  // Report emergency
+  reportEmergency: (emergencyId: string, userId: string, reason: string) =>
+    fetchAPI(`/emergencies/${emergencyId}/report`, {
+      method: 'PATCH',
+      body: JSON.stringify({ userId, reason }),
+    }),
+};
+
 // Health check
 export const healthCheck = () => fetchAPI('/health');
 
 export default {
   userAPI,
   messageAPI,
+  translationAPI,
+  emergencyAPI,
   healthCheck,
 };

@@ -80,7 +80,7 @@ async function generateMatchExplanation(currentUser, neighbor) {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `You are a helpful community assistant matching neighbors. Generate a SHORT (1-2 sentences) personalized explanation of why these two neighbors are a good match.
 
@@ -261,7 +261,7 @@ async function generateMessageSuggestions(sender, receiver, context = '') {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `Generate 3 unique conversation starters for ${sender.name} to message ${receiver.name}.
 

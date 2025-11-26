@@ -8,10 +8,18 @@ const baseMockUsers = [
     name: 'Sarah Chen',
     email: 'sarah.chen@email.com',
     bio: 'Piano teacher and gardening enthusiast. Love sharing my harvest!',
-    location: { latitude: 45.5152, longitude: -122.6784, address: '123 Maple St' },
+    preferredLanguage: 'zh', // Chinese
+    location: { 
+      latitude: 45.5152, 
+      longitude: -122.6784, 
+      address: '123 Maple St',
+      coordinates: [-122.6784, 45.5152] // [lng, lat] for geospatial
+    },
+    skills: ['Piano Lessons', 'Gardening', 'First Aid', 'CPR'], // Emergency skills
     skillsOffered: [
       { name: 'Piano Lessons', category: 'Education', description: 'Teaching for 10 years' },
-      { name: 'Gardening Tips', category: 'Lifestyle', description: 'Organic gardening expert' }
+      { name: 'Gardening Tips', category: 'Lifestyle', description: 'Organic gardening expert' },
+      { name: 'First Aid', category: 'Healthcare', description: 'CPR certified' }
     ],
     skillsNeeded: [{ name: 'Pet Sitting', category: 'Pet Care' }],
     itemsOffered: [
@@ -31,10 +39,18 @@ const baseMockUsers = [
     name: 'Marcus Johnson',
     email: 'marcus.j@email.com',
     bio: 'Handyman and DIY expert. Happy to help with home repairs!',
-    location: { latitude: 45.5155, longitude: -122.6790, address: '456 Oak Ave' },
+    preferredLanguage: 'en', // English
+    location: { 
+      latitude: 45.5155, 
+      longitude: -122.6790, 
+      address: '456 Oak Ave',
+      coordinates: [-122.6790, 45.5155]
+    },
+    skills: ['Home Repairs', 'Construction', 'Emergency Response', 'Mobility Assistance'], // Emergency skills
     skillsOffered: [
       { name: 'Home Repairs', category: 'Home Improvement', description: 'Plumbing, electrical, carpentry' },
-      { name: 'Furniture Assembly', category: 'Home Improvement' }
+      { name: 'Furniture Assembly', category: 'Home Improvement' },
+      { name: 'Emergency Response', category: 'Safety', description: 'Former firefighter' }
     ],
     skillsNeeded: [{ name: 'Cooking Classes', category: 'Culinary' }],
     itemsOffered: [{ name: 'Power Drill', category: 'Tools', condition: 'Used' }],
@@ -51,8 +67,17 @@ const baseMockUsers = [
     name: 'Elena Rodriguez',
     email: 'elena.r@email.com',
     bio: 'New mom looking for support and community connections.',
-    location: { latitude: 45.5160, longitude: -122.6800, address: '789 Pine Rd' },
-    skillsOffered: [],
+    preferredLanguage: 'es', // Spanish
+    location: { 
+      latitude: 45.5160, 
+      longitude: -122.6800, 
+      address: '789 Pine Rd',
+      coordinates: [-122.6800, 45.5160]
+    },
+    skills: ['Nursing', 'Crisis Counseling', 'Elderly Care'], // Emergency skills
+    skillsOffered: [
+      { name: 'Nursing', category: 'Healthcare', description: 'Registered nurse, pediatric experience' }
+    ],
     skillsNeeded: [
       { name: 'Babysitting', category: 'Childcare' },
       { name: 'Meal Prep Help', category: 'Culinary' }
@@ -74,10 +99,18 @@ const baseMockUsers = [
     name: 'David Kim',
     email: 'david.kim@email.com',
     bio: 'Software engineer who loves cooking and photography.',
-    location: { latitude: 45.5140, longitude: -122.6750, address: '321 Elm St' },
+    preferredLanguage: 'ko', // Korean
+    location: { 
+      latitude: 45.5140, 
+      longitude: -122.6750, 
+      address: '321 Elm St',
+      coordinates: [-122.6750, 45.5140]
+    },
+    skills: ['Web Development', 'Photography', 'EMT', 'Medical'], // Emergency skills
     skillsOffered: [
       { name: 'Web Development', category: 'Technology', description: 'React, Node.js, Python' },
-      { name: 'Photography', category: 'Arts', description: 'Portrait and event photography' }
+      { name: 'Photography', category: 'Arts', description: 'Portrait and event photography' },
+      { name: 'EMT', category: 'Healthcare', description: 'Certified EMT, volunteer on weekends' }
     ],
     skillsNeeded: [{ name: 'Spanish Tutoring', category: 'Education' }],
     itemsOffered: [{ name: 'Old Laptop', category: 'Electronics', condition: 'Used' }],
@@ -94,10 +127,18 @@ const baseMockUsers = [
     name: 'Aisha Patel',
     email: 'aisha.patel@email.com',
     bio: 'Yoga instructor and wellness coach. Lets build a healthier community!',
-    location: { latitude: 45.5170, longitude: -122.6820, address: '654 Birch Ln' },
+    preferredLanguage: 'hi', // Hindi
+    location: { 
+      latitude: 45.5170, 
+      longitude: -122.6820, 
+      address: '654 Birch Ln',
+      coordinates: [-122.6820, 45.5170]
+    },
+    skills: ['Yoga', 'Meditation', 'Crisis Counseling', 'Physical Therapy'], // Emergency skills
     skillsOffered: [
       { name: 'Yoga Classes', category: 'Fitness', description: 'All levels welcome' },
-      { name: 'Meditation Coaching', category: 'Wellness' }
+      { name: 'Meditation Coaching', category: 'Wellness' },
+      { name: 'Crisis Counseling', category: 'Mental Health', description: 'Trained counselor, crisis intervention' }
     ],
     skillsNeeded: [],
     itemsOffered: [{ name: 'Yoga Mats', category: 'Fitness', condition: 'Used' }],
