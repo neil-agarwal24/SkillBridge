@@ -21,7 +21,6 @@ export function Navbar() {
     { label: 'Home', href: '/', icon: Home },
     { label: 'Discover', href: '/discover', icon: MapPin },
     { label: 'Messages', href: '/messages', icon: MessageCircle },
-    { label: 'Emergency', href: '/emergency', icon: AlertTriangle, highlight: true },
     { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
   ]
 
@@ -39,7 +38,7 @@ export function Navbar() {
               <span className="relative z-10">N</span>
             </motion.div>
             <span className="font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-300 hidden sm:inline">
-              SynapseAI
+              SkillBridge
             </span>
           </Link>
 

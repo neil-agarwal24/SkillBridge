@@ -74,8 +74,23 @@ exports.previewTranslation = async (req, res) => {
     // Translate
     const result = await translateText(text, targetLang, sourceLang);
 
-    // If translation actually failed (not just skipped), log and return error
+    // If translation actually failed (not just skipped), handle gracefully
     if (result.failed) {
+      // For rate limit errors, return success with original text (graceful degradation)
+      if (result.rateLimited) {
+        return res.json({
+          success: true,
+          translation: text,
+          targetLanguage: targetLang,
+          languageName: getLanguageName(targetLang),
+          recipientName: recipient.name,
+          rateLimited: true,
+          skipped: true,
+          reason: 'API rate limit - showing original text'
+        });
+      }
+      
+      // For other errors, log and return error
       console.warn(`⚠ Translation failed for ${senderId} -> ${recipientId}: ${result.error}`);
       return res.status(503).json({
         success: false,

@@ -7,7 +7,7 @@ const baseMockUsers = [
     _id: '1',
     name: 'Sarah Chen',
     email: 'sarah.chen@email.com',
-    bio: 'Piano teacher and gardening enthusiast. Love sharing my harvest!',
+    bio: 'Math and science teacher with 10 years of experience. Love helping students discover their potential!',
     preferredLanguage: 'zh', // Chinese
     location: { 
       latitude: 45.5152, 
@@ -15,16 +15,16 @@ const baseMockUsers = [
       address: '123 Maple St',
       coordinates: [-122.6784, 45.5152] // [lng, lat] for geospatial
     },
-    skills: ['Piano Lessons', 'Gardening', 'First Aid', 'CPR'], // Emergency skills
+    skills: ['Math', 'Science', 'Algebra', 'Chemistry'], // Emergency skills
     skillsOffered: [
-      { name: 'Piano Lessons', category: 'Education', description: 'Teaching for 10 years' },
-      { name: 'Gardening Tips', category: 'Lifestyle', description: 'Organic gardening expert' },
-      { name: 'First Aid', category: 'Healthcare', description: 'CPR certified' }
+      { name: 'Math', category: 'Education', description: 'Algebra, Geometry, Calculus' },
+      { name: 'Science', category: 'Education', description: 'Biology, Chemistry, Physics' },
+      { name: 'SAT Prep', category: 'Education', description: 'Test preparation specialist' }
     ],
-    skillsNeeded: [{ name: 'Pet Sitting', category: 'Pet Care' }],
+    skillsNeeded: [{ name: 'Spanish', category: 'Education' }],
     itemsOffered: [
-      { name: 'Fresh Tomatoes', category: 'Food', condition: 'New' },
-      { name: 'Garden Tools', category: 'Tools', condition: 'Used' }
+      { name: 'Textbooks', category: 'Books', condition: 'Used' },
+      { name: 'Calculator', category: 'Electronics', condition: 'Used' }
     ],
     itemsNeeded: [],
     userType: 'skill-heavy',
@@ -38,7 +38,7 @@ const baseMockUsers = [
     _id: '2',
     name: 'Marcus Johnson',
     email: 'marcus.j@email.com',
-    bio: 'Handyman and DIY expert. Happy to help with home repairs!',
+    bio: 'Software engineer and coding instructor. Passionate about teaching programming to all ages!',
     preferredLanguage: 'en', // English
     location: { 
       latitude: 45.5155, 
@@ -46,15 +46,15 @@ const baseMockUsers = [
       address: '456 Oak Ave',
       coordinates: [-122.6790, 45.5155]
     },
-    skills: ['Home Repairs', 'Construction', 'Emergency Response', 'Mobility Assistance'], // Emergency skills
+    skills: ['Coding', 'Computer Science', 'Python', 'JavaScript'], // Emergency skills
     skillsOffered: [
-      { name: 'Home Repairs', category: 'Home Improvement', description: 'Plumbing, electrical, carpentry' },
-      { name: 'Furniture Assembly', category: 'Home Improvement' },
-      { name: 'Emergency Response', category: 'Safety', description: 'Former firefighter' }
+      { name: 'Coding', category: 'Education', description: 'Python, JavaScript, Web Development' },
+      { name: 'Computer Science', category: 'Education', description: 'CS fundamentals and algorithms' },
+      { name: 'Web Development', category: 'Education', description: 'HTML, CSS, React' }
     ],
-    skillsNeeded: [{ name: 'Cooking Classes', category: 'Culinary' }],
-    itemsOffered: [{ name: 'Power Drill', category: 'Tools', condition: 'Used' }],
-    itemsNeeded: [{ name: 'Lawn Mower', category: 'Garden' }],
+    skillsNeeded: [{ name: 'French', category: 'Education' }],
+    itemsOffered: [{ name: 'Laptop', category: 'Electronics', condition: 'Used' }],
+    itemsNeeded: [{ name: 'Programming Books', category: 'Books' }],
     userType: 'balanced',
     isNew: false,
     joinedAt: new Date('2024-02-20'),
@@ -66,7 +66,7 @@ const baseMockUsers = [
     _id: '3',
     name: 'Elena Rodriguez',
     email: 'elena.r@email.com',
-    bio: 'New mom looking for support and community connections.',
+    bio: 'Bilingual teacher specializing in Spanish and English language instruction.',
     preferredLanguage: 'es', // Spanish
     location: { 
       latitude: 45.5160, 
@@ -74,18 +74,18 @@ const baseMockUsers = [
       address: '789 Pine Rd',
       coordinates: [-122.6800, 45.5160]
     },
-    skills: ['Nursing', 'Crisis Counseling', 'Elderly Care'], // Emergency skills
+    skills: ['Spanish', 'English', 'Writing', 'Reading'], // Emergency skills
     skillsOffered: [
-      { name: 'Nursing', category: 'Healthcare', description: 'Registered nurse, pediatric experience' }
+      { name: 'Spanish', category: 'Education', description: 'Native speaker, all levels' }
     ],
     skillsNeeded: [
-      { name: 'Babysitting', category: 'Childcare' },
-      { name: 'Meal Prep Help', category: 'Culinary' }
+      { name: 'Math', category: 'Education' },
+      { name: 'Science', category: 'Education' }
     ],
     itemsOffered: [],
     itemsNeeded: [
-      { name: 'Baby Clothes', category: 'Clothing' },
-      { name: 'Stroller', category: 'Baby Gear' }
+      { name: 'Study Guides', category: 'Books' },
+      { name: 'Notebooks', category: 'Supplies' }
     ],
     userType: 'high-need',
     isNew: true,
@@ -98,7 +98,7 @@ const baseMockUsers = [
     _id: '4',
     name: 'David Kim',
     email: 'david.kim@email.com',
-    bio: 'Software engineer who loves cooking and photography.',
+    bio: 'Physics and chemistry teacher with a passion for hands-on learning.',
     preferredLanguage: 'ko', // Korean
     location: { 
       latitude: 45.5140, 
@@ -106,14 +106,14 @@ const baseMockUsers = [
       address: '321 Elm St',
       coordinates: [-122.6750, 45.5140]
     },
-    skills: ['Web Development', 'Photography', 'EMT', 'Medical'], // Emergency skills
+    skills: ['Physics', 'Chemistry', 'Biology', 'Lab Skills'], // Emergency skills
     skillsOffered: [
-      { name: 'Web Development', category: 'Technology', description: 'React, Node.js, Python' },
-      { name: 'Photography', category: 'Arts', description: 'Portrait and event photography' },
-      { name: 'EMT', category: 'Healthcare', description: 'Certified EMT, volunteer on weekends' }
+      { name: 'Physics', category: 'Education', description: 'AP Physics, mechanics, electricity' },
+      { name: 'Chemistry', category: 'Education', description: 'General and organic chemistry' },
+      { name: 'Biology', category: 'Education', description: 'Life sciences and lab work' }
     ],
-    skillsNeeded: [{ name: 'Spanish Tutoring', category: 'Education' }],
-    itemsOffered: [{ name: 'Old Laptop', category: 'Electronics', condition: 'Used' }],
+    skillsNeeded: [{ name: 'History', category: 'Education' }],
+    itemsOffered: [{ name: 'Lab Equipment', category: 'Science', condition: 'Used' }],
     itemsNeeded: [],
     userType: 'skill-heavy',
     isNew: false,
@@ -126,7 +126,7 @@ const baseMockUsers = [
     _id: '5',
     name: 'Aisha Patel',
     email: 'aisha.patel@email.com',
-    bio: 'Yoga instructor and wellness coach. Lets build a healthier community!',
+    bio: 'English teacher and writing coach. Help students find their voice through writing!',
     preferredLanguage: 'hi', // Hindi
     location: { 
       latitude: 45.5170, 
@@ -134,15 +134,15 @@ const baseMockUsers = [
       address: '654 Birch Ln',
       coordinates: [-122.6820, 45.5170]
     },
-    skills: ['Yoga', 'Meditation', 'Crisis Counseling', 'Physical Therapy'], // Emergency skills
+    skills: ['English', 'Writing', 'Essay Writing', 'Reading'], // Emergency skills
     skillsOffered: [
-      { name: 'Yoga Classes', category: 'Fitness', description: 'All levels welcome' },
-      { name: 'Meditation Coaching', category: 'Wellness' },
-      { name: 'Crisis Counseling', category: 'Mental Health', description: 'Trained counselor, crisis intervention' }
+      { name: 'English', category: 'Education', description: 'Grammar, literature, composition' },
+      { name: 'Writing', category: 'Education', description: 'Essay writing and creative writing' },
+      { name: 'Reading', category: 'Education', description: 'Reading comprehension and analysis' }
     ],
     skillsNeeded: [],
-    itemsOffered: [{ name: 'Yoga Mats', category: 'Fitness', condition: 'Used' }],
-    itemsNeeded: [{ name: 'Sound System', category: 'Electronics' }],
+    itemsOffered: [{ name: 'Reference Books', category: 'Books', condition: 'Used' }],
+    itemsNeeded: [{ name: 'Textbooks', category: 'Books' }],
     userType: 'skill-heavy',
     isNew: false,
     joinedAt: new Date('2024-04-15'),
@@ -154,14 +154,14 @@ const baseMockUsers = [
     _id: '6',
     name: 'Tom Anderson',
     email: 'tom.anderson@email.com',
-    bio: 'Retired teacher, love helping kids with homework and tutoring.',
+    bio: 'Retired math teacher with 30 years of experience. Love helping students understand challenging concepts!',
     location: { latitude: 45.5145, longitude: -122.6760, address: '987 Cedar Dr' },
     skillsOffered: [
-      { name: 'Math Tutoring', category: 'Education', description: 'K-12' },
-      { name: 'Reading Help', category: 'Education' }
+      { name: 'Math', category: 'Education', description: 'Algebra, Geometry, Pre-Calculus' },
+      { name: 'Algebra', category: 'Education', description: 'Algebra 1 and 2' }
     ],
-    skillsNeeded: [{ name: 'Tech Support', category: 'Technology' }],
-    itemsOffered: [{ name: 'Old Textbooks', category: 'Books', condition: 'Used' }],
+    skillsNeeded: [{ name: 'Coding', category: 'Education' }],
+    itemsOffered: [{ name: 'Textbooks', category: 'Books', condition: 'Used' }],
     itemsNeeded: [],
     userType: 'balanced',
     isNew: false,
@@ -174,14 +174,14 @@ const baseMockUsers = [
     _id: '7',
     name: 'Maria Santos',
     email: 'maria.santos@email.com',
-    bio: 'Seamstress and craft enthusiast. Can help with clothing repairs!',
+    bio: 'Art teacher and music instructor. Teaching students to express themselves through creativity!',
     location: { latitude: 45.5135, longitude: -122.6770, address: '147 Willow Way' },
     skillsOffered: [
-      { name: 'Sewing & Alterations', category: 'Lifestyle', description: 'Clothing repairs and custom work' },
-      { name: 'Knitting Lessons', category: 'Arts' }
+      { name: 'Art', category: 'Education', description: 'Drawing, painting, sculpture' },
+      { name: 'Music', category: 'Education', description: 'Piano and guitar lessons' }
     ],
-    skillsNeeded: [{ name: 'Car Maintenance', category: 'Automotive' }],
-    itemsOffered: [{ name: 'Fabric Scraps', category: 'Craft Supplies', condition: 'New' }],
+    skillsNeeded: [{ name: 'Math', category: 'Education' }],
+    itemsOffered: [{ name: 'Art Supplies', category: 'Art', condition: 'New' }],
     itemsNeeded: [],
     userType: 'skill-heavy',
     isNew: true,
@@ -194,17 +194,18 @@ const baseMockUsers = [
     _id: '8',
     name: 'James Wilson',
     email: 'james.wilson@email.com',
-    bio: 'College student looking for study buddies and affordable furniture.',
+    bio: 'High school student looking for tutoring help and study partners.',
     location: { latitude: 45.5130, longitude: -122.6795, address: '258 Spruce Ct' },
-    skillsOffered: [{ name: 'Dog Walking', category: 'Pet Care' }],
+    skillsOffered: [{ name: 'History', category: 'Education', description: 'US and World History' }],
     skillsNeeded: [
-      { name: 'Resume Review', category: 'Career' },
-      { name: 'Interview Prep', category: 'Career' }
+      { name: 'Calculus', category: 'Education' },
+      { name: 'Chemistry', category: 'Education' },
+      { name: 'SAT Prep', category: 'Education' }
     ],
     itemsOffered: [],
     itemsNeeded: [
-      { name: 'Desk', category: 'Furniture' },
-      { name: 'Desk Chair', category: 'Furniture' }
+      { name: 'Calculator', category: 'Electronics' },
+      { name: 'Textbooks', category: 'Books' }
     ],
     userType: 'high-need',
     isNew: true,

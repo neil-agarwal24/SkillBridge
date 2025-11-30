@@ -58,7 +58,7 @@ export default function AboutPage() {
               </motion.div>
               
               <motion.p variants={itemVariants} className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                NeighborNet uses AI to intentionally connect neighbors across income levels and ages—creating meaningful exchanges that feel mutual, not charitable.
+                SkillBridge uses AI to intentionally connect neighbors across income levels and ages—creating meaningful exchanges that feel mutual, not charitable.
               </motion.p>
 
               <motion.div variants={itemVariants} className="pt-4">
@@ -91,7 +91,7 @@ export default function AboutPage() {
                   People living on the same block rarely interact across income or age divides. A retired accountant with decades of experience might live next door to a student struggling with their taxes. A parent with childcare needs might be around the corner from a college student looking for part-time work.
                 </p>
                 <p className="text-lg leading-relaxed mt-4">
-                  Traditional social networks connect people who are already similar. Traditional charity creates uncomfortable power dynamics. <strong className="text-foreground">NeighborNet is different.</strong>
+                  Traditional social networks connect people who are already similar. Traditional charity creates uncomfortable power dynamics. <strong className="text-foreground">SkillBridge is different.</strong>
                 </p>
               </div>
             </motion.div>
@@ -206,7 +206,7 @@ export default function AboutPage() {
             >
               <div className="text-center space-y-4">
                 <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-                  How NeighborNet Works
+                  How SkillBridge Works
                 </h2>
               </div>
 
@@ -375,7 +375,7 @@ export default function AboutPage() {
 
               <div className="space-y-6 text-lg text-muted-foreground">
                 <p>
-                  NeighborNet is built on the principle that <strong className="text-foreground">everyone has something to offer</strong>. We don't create "helpers" and "helped"—we create neighbors.
+                  SkillBridge is built on the principle that <strong className="text-foreground">everyone has something to offer</strong>. We don't create "helpers" and "helped"—we create neighbors.
                 </p>
                 <p>
                   By emphasizing mutual exchange and using AI to find complementary skills, we ensure every connection feels balanced. A single parent teaching cooking to a software engineer who offers tech lessons isn't charity—it's community.

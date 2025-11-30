@@ -12,13 +12,15 @@ import { userAPI } from '@/lib/api'
 import { LanguageSelector } from '@/components/language-selector'
 
 const SKILL_OPTIONS = [
-  'Tutoring', 'Coding', 'Graphic Design', 'Gardening', 'Home Repair', 
-  'Photography', 'Music Lessons', 'Fitness Coaching', 'Cooking', 'Writing'
+  'Math', 'English', 'Science', 'History', 'Spanish', 'French',
+  'Coding', 'Physics', 'Chemistry', 'Biology', 'Writing', 'Reading',
+  'Algebra', 'Geometry', 'Calculus', 'Essay Writing', 'Grammar',
+  'Music', 'Art', 'Photography', 'Computer Science', 'SAT Prep'
 ]
 
 const ITEM_OPTIONS = [
-  'Tools', 'Books', 'Kitchen Equipment', 'Sports Gear', 'Electronics',
-  'Furniture', 'Toys', 'Garden Equipment', 'Camping Gear', 'Bikes'
+  'Textbooks', 'Study Guides', 'Calculator', 'Laptop', 'Notebooks',
+  'Art Supplies', 'Musical Instrument', 'Lab Equipment', 'Reference Books', 'Flashcards'
 ]
 
 export default function ProfilePage() {
@@ -278,14 +280,14 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
-            {/* Skills I Can Offer */}
+            {/* Skills I Can Teach */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="space-y-4"
             >
-              <h2 className="text-lg font-semibold text-foreground">Skills I Can Offer</h2>
+              <h2 className="text-lg font-semibold text-foreground">Skills I Can Teach</h2>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowSkills(!showSkills)}
@@ -326,14 +328,14 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
-            {/* Items I Can Share */}
+            {/* Resources I Can Share */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
               className="space-y-4"
             >
-              <h2 className="text-lg font-semibold text-foreground">Items I Can Share</h2>
+              <h2 className="text-lg font-semibold text-foreground">Resources I Can Share</h2>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowItems(!showItems)}
@@ -374,14 +376,14 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
-            {/* Skills I Need */}
+            {/* Skills I Want to Learn */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
               className="space-y-4"
             >
-              <h2 className="text-lg font-semibold text-secondary">Skills I Need</h2>
+              <h2 className="text-lg font-semibold text-secondary">Skills I Want to Learn</h2>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowNeedsSkills(!showNeedsSkills)}
@@ -422,14 +424,14 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
-            {/* Items I Need */}
+            {/* Resources I Need */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35 }}
               className="space-y-4"
             >
-              <h2 className="text-lg font-semibold text-secondary">Items I Need</h2>
+              <h2 className="text-lg font-semibold text-secondary">Resources I Need</h2>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowNeedsItems(!showNeedsItems)}

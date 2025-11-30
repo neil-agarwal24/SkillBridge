@@ -213,7 +213,7 @@ export default function Home() {
                   Ready to connect with your neighborhood?
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  NeighborNet makes it easy to find help, offer support, and strengthen community bonds.
+                  SkillBridge makes it easy to find help, offer support, and strengthen community bonds.
                 </p>
                 <div className="pt-4">
                   <Link

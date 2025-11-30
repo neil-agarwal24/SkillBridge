@@ -9,25 +9,34 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 
 const SKILL_OPTIONS = [
-  'Tutoring',
+  'Math',
+  'English',
+  'Science',
+  'History',
+  'Spanish',
+  'French',
   'Coding',
-  'Graphic Design',
-  'Gardening',
-  'Home Repair',
-  'Photography',
-  'Music Lessons',
-  'Fitness Coaching',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'Writing',
+  'Reading',
+  'Algebra',
+  'Geometry',
+  'SAT Prep',
+  'Music',
 ]
 
 const ITEM_OPTIONS = [
-  'Tools',
-  'Books',
-  'Kitchen Equipment',
-  'Sports Gear',
-  'Electronics',
-  'Furniture',
-  'Toys',
-  'Garden Equipment',
+  'Textbooks',
+  'Study Guides',
+  'Calculator',
+  'Laptop',
+  'Notebooks',
+  'Art Supplies',
+  'Musical Instrument',
+  'Lab Equipment',
+  'Reference Books',
 ]
 
 const CATEGORY_OPTIONS = [
@@ -165,7 +174,7 @@ export function SkillsFilterSidebar({ filters, setFilters }) {
             whileHover={{ color: 'var(--color-primary)' }}
             className="flex items-center justify-between w-full font-semibold text-foreground transition-colors"
           >
-            <span>Skills I Can Learn</span>
+            <span>Skills I Can Teach</span>
             <motion.div
               animate={{ rotate: expandedSections.skills ? 180 : 0 }}
               transition={{ duration: 0.2 }}
@@ -214,7 +223,7 @@ export function SkillsFilterSidebar({ filters, setFilters }) {
             whileHover={{ color: 'var(--color-primary)' }}
             className="flex items-center justify-between w-full font-semibold text-foreground transition-colors"
           >
-            <span>Items I Need</span>
+            <span>Skills I Want to Learn</span>
             <motion.div
               animate={{ rotate: expandedSections.items ? 180 : 0 }}
               transition={{ duration: 0.2 }}

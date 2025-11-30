@@ -170,6 +170,20 @@ Translation:`;
     };
 
   } catch (error) {
+    // Check if it's a rate limit error (429)
+    const isRateLimitError = error.message?.includes('429') || error.message?.includes('quota') || error.message?.includes('rate limit');
+    
+    if (isRateLimitError) {
+      console.warn('⚠ Translation API rate limit exceeded - returning original text');
+      return {
+        translatedText: text,
+        detectedLanguage: sourceLang !== 'auto' ? sourceLang : null,
+        error: 'Rate limit exceeded',
+        rateLimited: true,
+        failed: true
+      };
+    }
+    
     console.error('⚠ Translation API call failed:', error.message);
     if (error.message?.includes('fetch') || error.message?.includes('network')) {
       console.error('  → Network access may be restricted or Gemini API is unreachable');

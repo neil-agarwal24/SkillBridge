@@ -10,7 +10,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'SynapseAI - Share Skills, Share Stuff, Shrink the Gap',
+  title: 'SkillBridge - Share Skills, Share Stuff, Shrink the Gap',
   description: 'Connect with your neighbors to share skills, resources, and build community',
   generator: 'v0.app',
   icons: {

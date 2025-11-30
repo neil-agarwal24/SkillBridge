@@ -14,10 +14,10 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 35,
     y: 30,
     type: 'skill-heavy',
-    offers: ['Piano Lessons', 'Gardening Tips'],
-    needs: ['Pet Sitting'],
+    offers: ['Math', 'Science', 'Algebra'],
+    needs: ['Spanish'],
     distance: 0.3,
-    avatar: '👩‍🎨',
+    avatar: '👩‍🏫',
   },
   {
     id: 2,
@@ -25,10 +25,10 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 68,
     y: 52,
     type: 'skill-heavy',
-    offers: ['Home Repairs', 'Furniture Assembly', 'Power Drill'],
-    needs: ['Cooking Classes', 'Lawn Mower'],
+    offers: ['Coding', 'Computer Science', 'Web Development'],
+    needs: ['French', 'Art'],
     distance: 0.8,
-    avatar: '👨‍🔧',
+    avatar: '👨‍💻',
   },
   {
     id: 3,
@@ -36,10 +36,10 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 28,
     y: 68,
     type: 'high-need',
-    offers: ['Babysitting', 'Meal Prep Help'],
-    needs: ['Baby Clothes', 'Stroller'],
+    offers: ['Spanish', 'Reading'],
+    needs: ['Math', 'Science'],
     distance: 1.2,
-    avatar: '👩‍🍳',
+    avatar: '👩‍🏫',
   },
   {
     id: 4,
@@ -47,10 +47,10 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 72,
     y: 22,
     type: 'skill-heavy',
-    offers: ['Web Development', 'Photography'],
-    needs: ['Spanish Tutoring'],
+    offers: ['Physics', 'Chemistry', 'Biology'],
+    needs: ['History'],
     distance: 2.1,
-    avatar: '👨‍💻',
+    avatar: '👨‍🔬',
   },
   {
     id: 5,
@@ -58,10 +58,10 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 48,
     y: 42,
     type: 'skill-heavy',
-    offers: ['Yoga Classes', 'Meditation Coaching'],
-    needs: ['Sound System'],
+    offers: ['English', 'Writing', 'Essay Writing'],
+    needs: ['SAT Prep'],
     distance: 0.5,
-    avatar: '🧘‍♀️',
+    avatar: '👩‍💼',
   },
   {
     id: 6,
@@ -69,8 +69,8 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 22,
     y: 18,
     type: 'balanced',
-    offers: ['Math Tutoring', 'Reading Help'],
-    needs: ['Tech Support'],
+    offers: ['Math', 'Algebra', 'Geometry'],
+    needs: ['Coding'],
     distance: 1.5,
     avatar: '👨‍🏫',
   },
@@ -80,8 +80,8 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 60,
     y: 72,
     type: 'skill-heavy',
-    offers: ['Sewing & Alterations', 'Knitting Lessons'],
-    needs: ['Car Maintenance'],
+    offers: ['Art', 'Music', 'Piano'],
+    needs: ['Math'],
     distance: 0.9,
     avatar: '👩‍🎨',
   },
@@ -91,10 +91,10 @@ const FALLBACK_MAP_NEIGHBORS = [
     x: 42,
     y: 58,
     type: 'high-need',
-    offers: ['Dog Walking'],
-    needs: ['Resume Review', 'Interview Prep', 'Desk', 'Desk Chair'],
+    offers: ['History'],
+    needs: ['Calculus', 'Chemistry', 'SAT Prep'],
     distance: 1.3,
-    avatar: '👨‍💼',
+    avatar: '👨‍🎓',
   },
 ]
 
@@ -116,9 +116,26 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
   const [perspective, setPerspective] = useState({ x: 0, y: 0 })
   const [showInfo, setShowInfo] = useState(true)
   const [mapNeighbors, setMapNeighbors] = useState(FALLBACK_MAP_NEIGHBORS)
+  const [leaderboard, setLeaderboard] = useState([])
   const [loading, setLoading] = useState(true)
   const svgRef = useRef(null)
   const containerRef = useRef(null)
+
+  // Fetch leaderboard data
+  useEffect(() => {
+    async function fetchLeaderboard() {
+      try {
+        const response = await fetch('http://localhost:5001/api/users/leaderboard')
+        const data = await response.json()
+        if (data.success) {
+          setLeaderboard(data.data)
+        }
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error)
+      }
+    }
+    fetchLeaderboard()
+  }, [])
 
   // Fetch real neighbors from API
   useEffect(() => {
@@ -134,26 +151,31 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
         
         if (response.data && response.data.length > 0) {
           // Transform API data to map format
-          const transformedNeighbors = response.data.slice(0, 8).map((user: any, index: number) => ({
-            id: user._id,
-            name: user.name,
-            x: 20 + (index % 3) * 30 + Math.random() * 10,
-            y: 20 + Math.floor(index / 3) * 25 + Math.random() * 10,
-            type: user.userType || 'balanced',
-            offers: [
-              ...user.skillsOffered?.map((s: any) => s.name) || [],
-              ...user.itemsOffered?.map((i: any) => i.name) || []
-            ],
-            needs: [
-              ...user.skillsNeeded?.map((s: any) => s.name) || [],
-              ...user.itemsNeeded?.map((i: any) => i.name) || []
-            ],
-            distance: user.location?.latitude 
-              ? Math.sqrt(Math.pow(37.7749 - user.location.latitude, 2) + Math.pow(-122.4194 - user.location.longitude, 2)) * 69
-              : Math.random() * 2,
-            avatar: user.avatar || '👤',
-            aiMatchReason: user.aiMatchReason
-          }))
+          const transformedNeighbors = response.data.slice(0, 8).map((user: any, index: number) => {
+            const leaderboardEntry = leaderboard.find(lb => lb._id === user._id)
+            return {
+              id: user._id,
+              name: user.name,
+              x: 20 + (index % 3) * 30 + Math.random() * 10,
+              y: 20 + Math.floor(index / 3) * 25 + Math.random() * 10,
+              type: user.userType || 'balanced',
+              rank: leaderboardEntry?.rank || null,
+              points: leaderboardEntry?.points || 0,
+              offers: [
+                ...user.skillsOffered?.map((s: any) => s.name) || [],
+                ...user.itemsOffered?.map((i: any) => i.name) || []
+              ],
+              needs: [
+                ...user.skillsNeeded?.map((s: any) => s.name) || [],
+                ...user.itemsNeeded?.map((i: any) => i.name) || []
+              ],
+              distance: user.location?.latitude 
+                ? Math.sqrt(Math.pow(37.7749 - user.location.latitude, 2) + Math.pow(-122.4194 - user.location.longitude, 2)) * 69
+                : Math.random() * 2,
+              avatar: user.avatar || '👤',
+              aiMatchReason: user.aiMatchReason
+            }
+          })
           setMapNeighbors(transformedNeighbors)
         }
       } catch (error) {
@@ -165,7 +187,7 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
     }
     
     fetchMapNeighbors()
-  }, [filters])
+  }, [filters, leaderboard])
 
   // Enhanced 3D perspective tracking
   const handleMouseMove = (e) => {
@@ -198,8 +220,29 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
     onSelectNeighbor(null)
   }
 
-  const getNodeColor = (type) => {
-    switch (type) {
+  const getNodeColor = (neighbor) => {
+    // Priority: Leaderboard rank over type
+    if (neighbor.rank) {
+      switch (neighbor.rank) {
+        case 1:
+          return '#FFD700' // Gold
+        case 2:
+          return '#C0C0C0' // Silver
+        case 3:
+          return '#CD7F32' // Bronze
+        default:
+          if (neighbor.rank <= 10) {
+            return '#8B5CF6' // Purple for top 10
+          } else if (neighbor.rank <= 20) {
+            return '#3B82F6' // Blue for top 20
+          } else {
+            return '#10B981' // Green for others
+          }
+      }
+    }
+    
+    // Fallback to type-based coloring
+    switch (neighbor.type) {
       case 'skill-heavy':
         return '#459169'
       case 'high-need':
@@ -347,7 +390,7 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
               const isSelected = selectedNeighbor?.id === neighbor.id
               const isHovered = hoveredNode === neighbor.id
               const nodeScale = isSelected ? 1.6 : isHovered ? 1.3 : 1
-              const color = getNodeColor(neighbor.type)
+              const color = getNodeColor(neighbor)
               
               return (
                 <g key={neighbor.id} className="cursor-pointer">
@@ -416,6 +459,33 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
                   >
                     {getNodeIcon(neighbor.type)}
                   </motion.text>
+
+                  {/* Rank badge for top performers */}
+                  {neighbor.rank && neighbor.rank <= 10 && (
+                    <g className="pointer-events-none">
+                      <circle
+                        cx={neighbor.x + 1.5}
+                        cy={neighbor.y - 1.5}
+                        r={0.7 * nodeScale}
+                        fill={neighbor.rank <= 3 ? color : '#8B5CF6'}
+                        stroke="white"
+                        strokeWidth={0.15}
+                        filter="url(#node-shadow)"
+                      />
+                      <text
+                        x={neighbor.x + 1.5}
+                        y={neighbor.y - 1.5}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        fontSize={0.5 * nodeScale}
+                        fill="white"
+                        fontWeight="bold"
+                        className="select-none"
+                      >
+                        {neighbor.rank}
+                      </text>
+                    </g>
+                  )}
 
                   {/* Name label on hover */}
                   {(isHovered || isSelected) && (
@@ -492,19 +562,27 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
           </Button>
         </div>
 
-        {/* Legend */}
-        <div className="flex gap-6 items-center">
+        {/* Legend - Leaderboard Ranks */}
+        <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2 text-xs">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#459169]" />
-            <span className="text-muted-foreground font-medium">Skill-Heavy</span>
+            <div className="w-3 h-3 rounded-full bg-[#FFD700] border border-white/50" />
+            <span className="text-muted-foreground font-medium">🥇 #1</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#5B9BD5]" />
-            <span className="text-muted-foreground font-medium">High-Need</span>
+            <div className="w-3 h-3 rounded-full bg-[#C0C0C0] border border-white/50" />
+            <span className="text-muted-foreground font-medium">🥈 #2</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#F5A623]" />
-            <span className="text-muted-foreground font-medium">Balanced</span>
+            <div className="w-3 h-3 rounded-full bg-[#CD7F32] border border-white/50" />
+            <span className="text-muted-foreground font-medium">🥉 #3</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <div className="w-3 h-3 rounded-full bg-[#8B5CF6]" />
+            <span className="text-muted-foreground font-medium">Top 10</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <div className="w-3 h-3 rounded-full bg-[#3B82F6]" />
+            <span className="text-muted-foreground font-medium">Top 20</span>
           </div>
         </div>
 
@@ -534,11 +612,26 @@ export function CommunityMap({ filters, selectedNeighbor, onSelectNeighbor, mapF
               <div className="text-3xl">{selectedNeighbor.avatar}</div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg text-foreground">{selectedNeighbor.name}</h3>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: getNodeColor(selectedNeighbor.type) }} />
-                  {selectedNeighbor.type === 'skill-heavy' && 'Skill Provider'}
-                  {selectedNeighbor.type === 'high-need' && 'Seeking Help'}
-                  {selectedNeighbor.type === 'balanced' && 'Balanced Member'}
+                <div className="flex items-center gap-2 text-xs">
+                  {selectedNeighbor.rank && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold" style={{ 
+                      backgroundColor: `${getNodeColor(selectedNeighbor)}30`,
+                      color: getNodeColor(selectedNeighbor)
+                    }}>
+                      {selectedNeighbor.rank === 1 && '🥇'}
+                      {selectedNeighbor.rank === 2 && '🥈'}
+                      {selectedNeighbor.rank === 3 && '🥉'}
+                      Rank #{selectedNeighbor.rank} • {selectedNeighbor.points} pts
+                    </span>
+                  )}
+                  {!selectedNeighbor.rank && (
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: getNodeColor(selectedNeighbor) }} />
+                      {selectedNeighbor.type === 'skill-heavy' && 'Skill Provider'}
+                      {selectedNeighbor.type === 'high-need' && 'Seeking Help'}
+                      {selectedNeighbor.type === 'balanced' && 'Balanced Member'}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

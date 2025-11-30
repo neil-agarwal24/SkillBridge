@@ -10,8 +10,8 @@ const users = [
   {
     name: 'Sarah Chen',
     email: 'sarah@example.com',
-    bio: 'Piano teacher with a passion for music education and sustainable gardening. Love sharing knowledge and growing community.',
-    tagline: 'Piano teacher & gardening enthusiast',
+    bio: 'Math and science teacher with 10 years of experience. Love helping students discover their potential through personalized tutoring!',
+    tagline: 'Math & Science Teacher',
     avatar: '/woman-with-smile.jpg',
     preferredLanguage: 'zh', // Chinese
     location: {
@@ -23,20 +23,20 @@ const users = [
       longitude: -122.6784
     },
     skillsOffered: [
-      { name: 'Piano Lessons', category: 'Education', description: 'Beginner to intermediate piano instruction' },
-      { name: 'Gardening Tips', category: 'Home & Garden', description: 'Organic gardening and composting advice' },
-      { name: 'Meal Prep', category: 'Other', description: 'Healthy meal planning and preparation' }
+      { name: 'Math', category: 'Education', description: 'Algebra, Geometry, Calculus tutoring' },
+      { name: 'Science', category: 'Education', description: 'Biology, Chemistry, Physics lessons' },
+      { name: 'SAT Prep', category: 'Education', description: 'Test preparation specialist' }
     ],
     skillsNeeded: [
-      { name: 'Home Repair', category: 'Home & Garden', description: 'Need help fixing a leaky faucet' },
-      { name: 'Tech Help', category: 'Technology', description: 'Setting up smart home devices' }
+      { name: 'Spanish', category: 'Education', description: 'Want to learn conversational Spanish' },
+      { name: 'Art', category: 'Education', description: 'Basic drawing and painting' }
     ],
     itemsOffered: [
-      { name: 'Garden Tools', category: 'Garden', condition: 'Good' },
-      { name: 'Piano Books', category: 'Books', condition: 'Like New' }
+      { name: 'Textbooks', category: 'Books', condition: 'Good' },
+      { name: 'Calculator', category: 'Electronics', condition: 'Like New' }
     ],
     itemsNeeded: [
-      { name: 'Drill', category: 'Tools', description: 'For weekend DIY project' }
+      { name: 'Study Guides', category: 'Books', description: 'For SAT prep courses' }
     ],
     availability: ['Weekend Mornings', 'Weekend Afternoons'],
     userType: 'skill-heavy',
@@ -45,8 +45,8 @@ const users = [
   {
     name: 'Marcus Johnson',
     email: 'marcus@example.com',
-    bio: 'Retired handyman who loves helping neighbors. Volunteering keeps me active and connected to the community.',
-    tagline: 'Handyman & volunteer',
+    bio: 'Software engineer and coding instructor. Passionate about teaching programming to students of all ages and skill levels!',
+    tagline: 'Coding Instructor & Developer',
     avatar: '/smiling-man.png',
     preferredLanguage: 'en', // English
     location: {
@@ -58,18 +58,18 @@ const users = [
       longitude: -122.6800
     },
     skillsOffered: [
-      { name: 'Home Repair', category: 'Home & Garden', description: 'Plumbing, electrical, carpentry' },
-      { name: 'Landscaping', category: 'Home & Garden', description: 'Lawn care and garden design' },
-      { name: 'General Labor', category: 'Other', description: 'Moving, hauling, heavy lifting' }
+      { name: 'Coding', category: 'Education', description: 'Python, JavaScript, Web Development' },
+      { name: 'Computer Science', category: 'Education', description: 'CS fundamentals and algorithms' },
+      { name: 'Web Development', category: 'Education', description: 'HTML, CSS, React tutorials' }
     ],
     skillsNeeded: [
-      { name: 'Babysitting', category: 'Other', description: 'Occasional help with grandkids' },
-      { name: 'Tax Help', category: 'Professional', description: 'Filing taxes' }
+      { name: 'French', category: 'Education', description: 'Want to learn French for travel' },
+      { name: 'Music', category: 'Education', description: 'Guitar lessons' }
     ],
     itemsOffered: [
-      { name: 'Power Tools', category: 'Tools', condition: 'Good' },
-      { name: 'Ladder', category: 'Tools', condition: 'Good' },
-      { name: 'Lawn Mower', category: 'Garden', condition: 'Good' }
+      { name: 'Laptop', category: 'Electronics', condition: 'Good' },
+      { name: 'Programming Books', category: 'Books', condition: 'Good' },
+      { name: 'Reference Books', category: 'Books', condition: 'Good' }
     ],
     availability: ['Weekday Mornings', 'Weekday Afternoons', 'Flexible'],
     userType: 'skill-heavy',
@@ -78,8 +78,8 @@ const users = [
   {
     name: 'Elena Rodriguez',
     email: 'elena@example.com',
-    bio: 'New mom looking to build community and share our family\'s love of cooking and culture.',
-    tagline: 'New mom looking to connect',
+    bio: 'Bilingual teacher specializing in Spanish and English language instruction. Native speaker helping students become fluent!',
+    tagline: 'Spanish & English Teacher',
     avatar: '/woman-happy.jpg',
     preferredLanguage: 'es', // Spanish
     location: {
@@ -91,13 +91,13 @@ const users = [
       longitude: -122.6900
     },
     skillsOffered: [
-      { name: 'Cooking', category: 'Other', description: 'Traditional Mexican cuisine' },
-      { name: 'Spanish Lessons', category: 'Education', description: 'Conversational Spanish tutoring' }
+      { name: 'Spanish', category: 'Education', description: 'Native speaker, all levels welcome' },
+      { name: 'English', category: 'Education', description: 'ESL and grammar instruction' }
     ],
     skillsNeeded: [
-      { name: 'Childcare', category: 'Other', description: 'Part-time babysitter needed' },
-      { name: 'Home Repair', category: 'Home & Garden' },
-      { name: 'Moving Help', category: 'Other' }
+      { name: 'Math', category: 'Education', description: 'Need help with algebra' },
+      { name: 'Science', category: 'Education', description: 'Chemistry tutoring' },
+      { name: 'SAT Prep', category: 'Education', description: 'Test preparation help' }
     ],
     itemsNeeded: [
       { name: 'Baby Furniture', category: 'Furniture' },

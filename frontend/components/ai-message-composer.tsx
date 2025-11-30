@@ -109,13 +109,15 @@ export function AIMessageComposer({
         setTranslationPreview('Translation unavailable');
       }
     } catch (error: any) {
-      // Log translation errors (except user-not-found which is expected)
-      if (error?.status === 503) {
-        console.error('⚠ Translation service unavailable - Gemini API may be blocked or failing');
-      } else if (error?.status !== 404 && !error?.message?.toLowerCase().includes('not found')) {
+      // Only log unexpected errors (not rate limits or user-not-found)
+      if (error?.status === 503 && !error?.message?.includes('rate limit')) {
+        console.warn('⚠ Translation service temporarily unavailable');
+      } else if (error?.status !== 404 && !error?.message?.toLowerCase().includes('not found') && !error?.message?.includes('rate limit')) {
         console.error('Translation preview failed:', error);
       }
-      setTranslationPreview('Translation unavailable');
+      // Show original text when translation unavailable
+      setTranslationPreview(null);
+      setShowTranslationPreview(false);
     } finally {
       setIsTranslating(false);
     }

@@ -125,7 +125,7 @@ export function Footer() {
           className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4"
         >
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} NeighborNet. All rights reserved.
+            © {new Date().getFullYear()} SkillBridge. All rights reserved.
           </p>
           <div className="flex gap-6">
             {['Privacy', 'Terms'].map(item => (

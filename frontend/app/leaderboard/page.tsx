@@ -88,7 +88,7 @@ export default function LeaderboardPage() {
               Community Leaderboard
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Celebrating our most active community members who make NeighborNet thrive through connections and exchanges.
+              Celebrating our most active community members who make SkillBridge thrive through connections and exchanges.
             </p>
           </motion.div>
 
